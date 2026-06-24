@@ -158,9 +158,9 @@ uv run pytest tests/          # Run unit tests
 │  │     MODULE       │    │     ENGINE        │    │        [✓]          │   │
 │  │      [✓]         │    │      [✓]          │    │                     │   │
 │  │ • RESTMAN XML    │    │ • 3-Tier Classify │    │ • Weighted scoring  │   │
-│  │ • Graphman JSON  │    │ • 35 DIRECT       │    │ • 4 seed patterns   │   │
+│  │ • Graphman JSON  │    │ • 35 DIRECT       │    │ • 20 pattern files   │   │
 │  │ • GMU Directory  │    │ • 109 CONDITIONAL │    │ • AI-learned cache  │   │
-│  │ • Standalone XML │    │ • 129 CUSTOM      │    │ • 15 knowledge pats │   │
+│  │ • Standalone XML │    │ • 129 CUSTOM      │    │ • 2 ref catalogs    │   │
 │  └──────────────────┘    └──────────────────┘    └──────────────────────┘   │
 │         │                        │                        │                 │
 │         ▼                        ▼                        ▼                 │
@@ -176,7 +176,7 @@ uv run pytest tests/          # Run unit tests
 │  │    ENGINE     │  │     MAPPER        │  │   ORCHESTRATOR   │            │
 │  │     [✓]       │  │      [✓]          │  │      [✓]         │            │
 │  │ • Kong YAML   │  │ • Cluster Props   │  │ • Pattern Match  │            │
-│  │ • 13 plugin   │  │ • Stored Passwords│  │ • Cache Check    │            │
+│  │ • 23 plugin   │  │ • Stored Passwords│  │ • Cache Check    │            │
 │  │   generators  │  │ • Certificates    │  │ • Claude API     │            │
 │  │ • Vault refs  │  │ • JDBC Creds      │  │ • Pattern Learn  │            │
 │  └───────┬───────┘  │ • JWT Keys        │  └──────────────────┘            │
@@ -245,9 +245,9 @@ uv run pytest tests/          # Run unit tests
 
 | Tier | Count | Confidence | Action |
 |------|-------|------------|--------|
-| DIRECT | 19 types | 1.0 | Auto-generate Kong plugin config |
-| CONDITIONAL | 47 types | 0.7 | Generate with review flags |
-| CUSTOM | 38 types | 0.0 | Requires AI analysis or manual implementation |
+| DIRECT | 35 types | 1.0 | Auto-generate Kong plugin config |
+| CONDITIONAL | 109 types | 0.7 | Generate with review flags |
+| CUSTOM | 129 types | 0.0 | Requires AI analysis or manual implementation |
 
 #### 3.2.3 Pattern Matcher
 
@@ -280,22 +280,29 @@ uv run pytest tests/          # Run unit tests
 **Implementation:** `src/layer7_kong_migration/generation/`
 
 - `kong.py` - `KongGenerator` produces Kong YAML v3.0 with optional vault reference resolution
-- `plugins.py` - 13 assertion-specific plugin generators with dispatch table
+- `plugins.py` - 23 assertion-specific plugin generators with dispatch table
 - `vaults.py` - `VaultMapper` maps cluster properties, secrets, certificates, and keys to Kong vaults
 
-**Implemented Plugin Generators:**
+**Implemented Plugin Generators (16 functions, 23 dispatch entries):**
 
 | Generator | Layer 7 Assertion | Kong Enterprise Plugin |
 |-----------|-------------------|------------------------|
 | `_gen_basic_auth` | HttpBasic | basic-auth |
 | `_gen_key_auth` | LookupApiKey | key-auth |
 | `_gen_cors` | CorsAssertion | cors |
-| `_gen_rate_limiting` | RateLimit, DistributedRateLimit | rate-limiting |
+| `_gen_rate_limiting` | RateLimit, DistributedRateLimit | rate-limiting / rate-limiting-advanced |
 | `_gen_request_size_limiting` | RequestSizeLimit | request-size-limiting |
 | `_gen_ip_restriction` | RemoteIpRange | ip-restriction |
 | `_gen_request_termination` | HardcodedResponse, EchoRoutingAssertion | request-termination |
 | `_gen_http_log` | AuditDetailAssertion, AuditAssertion | http-log |
 | `_gen_request_transformer` | AddHeader, RemoveHeader | request-transformer / response-transformer |
+| `_gen_xml_threat_protection` | DocumentStructureThreat | xml-threat-protection (Enterprise) |
+| `_gen_json_threat_protection` | JsonDocumentStructureThreat | json-threat-protection (Enterprise) |
+| `_gen_kafka_upstream` | KafkaRoutingAssertion | kafka-upstream (Enterprise) |
+| `_gen_exit_transformer` | CustomizeErrorResponse | exit-transformer (Enterprise) |
+| `_gen_graphql_rate_limiting` | GraphqlSchemaValidation | graphql-rate-limiting-advanced (Enterprise) |
+| `_gen_opa` | SiteMinderAuthorize, SiteMinderCheckProtected | opa (Enterprise) |
+| `_gen_openid_connect` | SiteMinderAuthenticate, ValidateNonSoapSamlToken, CreateSamlToken | openid-connect (Enterprise) |
 | `integrate_ai_results` | (any AI-analyzed) | AI-generated plugin config |
 
 #### 3.2.5 Vault & Secrets Mapper
@@ -508,12 +515,31 @@ layer7-kong-migration/
 │
 ├── knowledge/
 │   ├── mappings/
-│   │   └── assertion-to-plugin.yaml   # 30+ assertion→plugin mappings with notes
-│   └── patterns/                       # Seed + AI-learned patterns
-│       ├── rate-limit-basic.yaml
-│       ├── cors-standard.yaml
-│       ├── basic-auth-ldap.yaml
-│       └── jwt-decode-validate.yaml
+│   │   └── assertion-to-plugin.yaml   # 54 assertion→plugin mappings with notes
+│   ├── patterns/                       # 20 migration pattern files
+│   │   ├── rate-limit-basic.yaml      # Basic rate limiting
+│   │   ├── cors-standard.yaml         # CORS configuration
+│   │   ├── basic-auth-ldap.yaml       # LDAP authentication
+│   │   ├── jwt-decode-validate.yaml   # JWT validation + claims
+│   │   ├── jwt-validation-claims.yaml # JWT claims mapping
+│   │   ├── oauth2-token-validation.yaml # OAuth2 token introspection
+│   │   ├── backend-routing.yaml       # HTTP routing + TLS
+│   │   ├── org-rate-quota.yaml        # Org-level throughput quota
+│   │   ├── json-schema-validation.yaml # JSON schema validation
+│   │   ├── xml-schema-validation.yaml # XML schema validation
+│   │   ├── graphql-depth-limiting.yaml # GraphQL depth + cost limiting
+│   │   ├── mtls-certificate-validation.yaml # mTLS client cert
+│   │   ├── threat-protection-layered.yaml # SQL/XSS/XML threat protection
+│   │   ├── log4shell-security-filter.yaml # Log4Shell pattern detection
+│   │   ├── opa-integration.yaml       # OPA authorization (JWT + RBAC)
+│   │   ├── ai-gateway-proxy.yaml      # AI Gateway LLM proxy
+│   │   ├── otk-fapi-compliance.yaml   # FAPI/CIBA compliance
+│   │   ├── config-cache-scheduled.yaml # Scheduled tasks + caching
+│   │   ├── metrics-offboxing.yaml     # Prometheus/OpenTelemetry metrics
+│   │   └── custom-assertions-extended.yaml # SSH, math, delay, injection filter
+│   └── reference/                      # Authoritative catalogs
+│       ├── assertion-type-catalog.yaml # All 273 assertion types by category
+│       └── graphman-entity-types.yaml  # 47 active + 11 deprecated entity types
 │
 ├── samples/                            # Test bundles
 │   ├── simple-auth-service/           # 9 assertions (100% automation)
@@ -1085,7 +1111,9 @@ Generated YAML must:
 
 ## 11. Assertion-to-Plugin Mapping Reference
 
-### 11.1 DIRECT Assertions (19 types - auto-generate)
+> **Note:** The tables below show the most common types in each tier. For the complete list of all 273 assertion types, see `knowledge/reference/assertion-type-catalog.yaml`.
+
+### 11.1 DIRECT Assertions (35 types - auto-generate)
 
 | Layer 7 Assertion | Kong Plugin | Notes |
 |-------------------|-------------|-------|
@@ -1109,7 +1137,7 @@ Generated YAML must:
 | UUIDGenerator | pre-function | UUID generation via Lua |
 | RaiseError | request-termination | Error response |
 
-### 11.2 CONDITIONAL Assertions (31 types - generate with review)
+### 11.2 CONDITIONAL Assertions (109 types - generate with review)
 
 | Layer 7 Assertion | Kong Plugin | Review Flag | Notes |
 |-------------------|-------------|-------------|-------|
@@ -1145,7 +1173,7 @@ Generated YAML must:
 | ValidateCertificate | mtls-auth | SECURITY_REVIEW | Certificate validation |
 | CodeInjectionProtectionAssertion | bot-detection | SECURITY_REVIEW | Code injection rules |
 
-### 11.3 CUSTOM Assertions (54 types - AI or manual)
+### 11.3 CUSTOM Assertions (129 types - AI or manual)
 
 **Scripting:**
 
@@ -1548,14 +1576,32 @@ pattern:
     confidence: 0.85
 ```
 
-### 14.3 Seed Patterns
+### 14.3 Knowledge Patterns (20 files)
 
-| Pattern ID | Assertion Type | Kong Plugin | Confidence |
-|------------|---------------|-------------|------------|
-| `rate-limit-basic` | RateLimit | rate-limiting | 0.95 |
-| `cors-standard` | CorsAssertion | cors | 0.95 |
+The framework ships with 20 migration pattern files covering the most common Layer 7 patterns:
+
+| Pattern ID | Category | Kong Plugin(s) | Confidence |
+|------------|----------|----------------|------------|
+| `rate-limit-basic` | Traffic Control | rate-limiting | 0.95 |
+| `org-rate-quota` | Traffic Control | rate-limiting-advanced | 0.85 |
+| `cors-standard` | Security | cors | 0.95 |
 | `basic-auth-ldap` | Authentication | ldap-auth | 0.70 |
-| `jwt-decode-validate` | DecodeJsonWebToken | jwt | 0.75 |
+| `jwt-decode-validate` | Authentication | jwt | 0.75 |
+| `jwt-validation-claims` | Authentication | jwt + pre-function | 0.80 |
+| `oauth2-token-validation` | Authentication | openid-connect | 0.80 |
+| `backend-routing` | Routing | _upstream | 0.85 |
+| `json-schema-validation` | Validation | request-validator | 0.85 |
+| `xml-schema-validation` | Validation | request-validator | 0.80 |
+| `graphql-depth-limiting` | Validation | graphql-rate-limiting-advanced | 0.80 |
+| `mtls-certificate-validation` | Security | mtls-auth | 0.85 |
+| `threat-protection-layered` | Security | pre-function + xml-threat-protection | 0.80 |
+| `log4shell-security-filter` | Security | pre-function | 0.85 |
+| `opa-integration` | Authorization | opa | 0.80 |
+| `ai-gateway-proxy` | AI Gateway | ai-proxy + ai-rate-limiting | 0.75 |
+| `otk-fapi-compliance` | Compliance | openid-connect + mtls-auth | 0.75 |
+| `config-cache-scheduled` | Caching | proxy-cache + pre-function | 0.70 |
+| `metrics-offboxing` | Observability | prometheus + opentelemetry | 0.75 |
+| `custom-assertions-extended` | Custom | pre-function | 0.65 |
 
 ### 14.4 AI-Learned Patterns
 
@@ -1674,7 +1720,7 @@ The AI prompt system includes per-assertion-type guidance via the `TYPE_HINTS` d
 | Assertion Types Classified | >100 | **273** (35D + 109C + 129X) |
 | Registered Extractors | >50 | **72** |
 | Plugin Generators | >10 | **23** |
-| Seed Patterns | 4 | **4** |
+| Knowledge Patterns | 20 | **20** |
 | Unit Tests | >50 | **58 passing** |
 | OTK Automation Rate | >80% | **83%** |
 | Simple Bundle Rate | >90% | **100%** |
@@ -1793,7 +1839,6 @@ The framework recognizes **273 assertion types** across 3 classification tiers (
 
 Known assertion types discovered in the OTK bundle not yet explicitly classified (handled as CUSTOM):
 - `IdentityAttributes` - Identity context attributes (note: `CertificateAttributes` now classified as CONDITIONAL → mtls-auth)
-- `IdentityAttributes` - Identity context attributes
 - `XpathCredentialSource` - XPath-based credential extraction
 - `assertionComment` - Policy comment (lowercase variant)
 

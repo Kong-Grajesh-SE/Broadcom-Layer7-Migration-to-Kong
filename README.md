@@ -6,9 +6,42 @@
 
 ---
 
+## What This Delivers
+
+Point this toolkit at a customer's Layer 7 gateway export and get a **migration plan + working Kong configuration in minutes instead of weeks**.
+
+The framework takes Layer 7 exports (RESTMAN XML, Graphman JSON, GMU directories, standalone policies, ZIP archives) and produces:
+
+- **Production-ready Kong Gateway 3.14 declarative YAML** — services, routes, plugins, consumers, upstreams — auto-generated from Layer 7 policies
+- **Vault-mapped secrets** — cluster properties, stored passwords, JDBC credentials, and certificates mapped to Kong vault references (env, AWS Secrets Manager, HashiCorp Vault, GCP Secret Manager)
+- **Structured gap analysis** — every assertion that can't auto-migrate gets a specific review flag explaining what's needed (IdP migration, Lua conversion, architectural redesign, or custom plugin)
+- **HTML migration report + customer-facing talking points** — ready for internal review or customer delivery
+- **20 migration pattern files** — ready-made knowledge for auth, OPA, AI Gateway, FAPI, threat protection, rate limiting, mTLS, GraphQL, and more
+- **47 Graphman entity type mappings** — services, policies, IdPs, secrets, scheduled tasks, etc. mapped to their Kong equivalents
+
+### Automation Coverage
+
+| Scenario | Automation Rate |
+|----------|----------------|
+| Simple services (auth + routing + rate limit) | **100%** — fully auto-generated Kong YAML |
+| OTK OAuth/OIDC bundles (130 policies, 1596 assertions) | **83%** — most assertions auto-classified |
+| Complex services (transforms, WS-Security, multi-protocol) | **50-70%** — DIRECT + CONDITIONAL auto-generated, CUSTOM flagged with guidance |
+
+### How the Three Tiers Work
+
+| Tier | Count | What Happens | Example |
+|------|-------|-------------|---------|
+| **DIRECT** | 35 | Auto-generates Kong plugin config. Zero review needed. | `RateLimit` → `rate-limiting` plugin YAML |
+| **CONDITIONAL** | 109 | Generates config with review flags. Human verifies settings. | `SiteMinderAuthenticate` → `openid-connect` + "IdP migration required" |
+| **CUSTOM** | 129 | Flagged for AI analysis or manual work. Specific guidance provided. | `JavaScript` → "Lua conversion needed" with pre-function scaffold |
+
+A Kong SE runs the tool, reviews the flagged items, and delivers a complete migration package.
+
+---
+
 ## Why This Exists
 
-Enterprises running Broadcom Layer 7 (CA API Gateway) face a complex migration path to Kong. Policies are deeply nested XML with 247+ assertion types spanning authentication, traffic control, transformation, routing, and protocol bridging. Manual migration is slow, error-prone, and expensive.
+Enterprises running Broadcom Layer 7 (CA API Gateway) face a complex migration path to Kong. Policies are deeply nested XML with 273 assertion types spanning authentication, traffic control, transformation, routing, and protocol bridging. Manual migration is slow, error-prone, and expensive.
 
 This framework automates 75-85% of that work by parsing Layer 7 exports, classifying every assertion by migration complexity, and generating production-ready Kong Gateway 3.14 declarative YAML — leveraging Enterprise plugins like `xml-threat-protection`, `kafka-upstream`, `opa`, and `exit-transformer` for broader coverage, with AI-assisted analysis for the hard cases.
 
@@ -147,7 +180,7 @@ uv run migrate pattern list
 │   └── models/                 # Pydantic IR (PolicyBundle) + Kong output models
 ├── knowledge/
 │   ├── mappings/               # Assertion-to-plugin YAML mappings
-│   ├── patterns/               # 15 migration pattern files (auth, routing, security, AI gateway...)
+│   ├── patterns/               # 20 migration pattern files (auth, routing, security, AI gateway...)
 │   └── reference/              # Full assertion catalog (273 types) + Graphman entity types (47)
 ├── samples/                    # Test bundles (synthetic + real OTK policies)
 ├── tests/                      # 58 unit tests
