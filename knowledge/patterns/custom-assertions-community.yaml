@@ -1,0 +1,78 @@
+pattern:
+  id: custom-assertions-community
+  name: "Community Custom Assertions Migration Guide"
+  description: "Migration guidance for 4 custom Java assertions from the Layer7 community: SSH Command, Math Expression, Delay, and Injection Filter"
+  source: "Layer7-Community/Assertions"
+  layer7:
+    assertion_types:
+      - SshCommandAssertion
+      - EvaluateMathExpressionAssertion
+      - DelayAssertion
+      - InjectionFilterAssertion
+    assertions:
+      - name: "SSH Command"
+        type: SshCommandAssertion
+        category: MessageRouting
+        config_keys:
+          - host
+          - port  # default 22
+          - username
+          - password  # from secure store
+          - privateKey
+          - usePrivateKey
+          - command
+          - arguments[]
+          - failIfExitStatusNot0
+          - targetName  # request/response/other
+          - ssh.command.maxwait  # cluster property
+          - ssh.exitStatus  # output context variable
+          - ssh.errorMessage  # output context variable
+        kong_approach: "No direct equivalent. Architectural change: replace with HTTP callout to intermediary service that performs SSH. Pre-function insufficient for persistent SSH sessions."
+
+      - name: "Evaluate Math Expression"
+        type: EvaluateMathExpressionAssertion
+        category: CustomAssertions
+        config_keys:
+          - expression  # supports ${context_vars}, trig/log/root/abs/ceil/floor
+          - outputVariable
+          - precision  # decimal places
+        kong_approach: "Pre-function Lua. math library covers all functions. Short access-phase snippet."
+
+      - name: "Delay"
+        type: DelayAssertion
+        category: CustomAssertions
+        config_keys:
+          - delayMilliSec  # supports ${context_vars}
+        kong_approach: "Pre-function Lua one-liner: ngx.sleep(delay_ms / 1000). Dev/test only."
+
+      - name: "Injection Filter"
+        type: InjectionFilterAssertion
+        category: MessageValidationTransformation
+        config_keys:
+          - includeURL  # scan URL params
+          - includeBody  # scan body (XML nodes/attrs, JSON keys/values, MIME parts)
+          - injectionFilterKey  # reference to stored filter entity with regex patterns
+          - targetMessageVariable  # request/response/other
+        kong_approach: "Partial: Kong bot-detection + pre-function regex matching. Full: custom Kong plugin replicating pattern-matching or WAF integration (ModSecurity via Kong)."
+
+    keywords:
+      - custom assertion
+      - ssh
+      - math expression
+      - delay
+      - injection filter
+      - java assertion
+  kong:
+    plugins:
+      - name: pre-function
+        notes: "Covers EvaluateMathExpression, Delay, and partial InjectionFilter"
+    requires_review: true
+    review_notes:
+      - "SshCommandAssertion requires architectural change - no gateway-level SSH in Kong"
+      - "EvaluateMathExpressionAssertion maps cleanly to Lua math library in pre-function"
+      - "DelayAssertion maps to ngx.sleep() but should be removed in production migrations"
+      - "InjectionFilterAssertion's deep content inspection (XML nodes, JSON keys, MIME parts) needs custom plugin or WAF"
+      - "L7 CustomAssertion pattern (config class + ServiceInvocation) maps to Kong plugin (schema.lua + handler.lua)"
+  metadata:
+    contributor: layer7-community-assertions
+    confidence: 0.80

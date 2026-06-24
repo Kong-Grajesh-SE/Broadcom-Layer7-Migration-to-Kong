@@ -1,0 +1,66 @@
+pattern:
+  id: otk-fapi-compliance
+  name: "OTK FAPI Baseline/Advanced Compliance Profile"
+  description: "FAPI compliance extensions combining mTLS, PAR, JARM, interaction-id headers, PS256 signing, and custom id_token claims"
+  source: "Layer7-Community/otk-customizations-single"
+  layer7:
+    assertion_types:
+      - SslAssertion  # RequireClientAuthentication for mTLS
+      - EncodeJsonWebToken  # PS256 signing for id_tokens and JARM
+      - DecodeJsonWebToken  # JWT validation with specific algorithms
+      - SetVariable  # FAPI interaction-id header, custom claims
+      - ComparisonAssertion  # FAPI-required field validation
+      - CacheLookup  # PAR request_uri cache
+      - CacheStorage  # PAR request_uri storage
+      - Encapsulated  # OTK fragments for token customization
+      - CodeInjectionProtectionAssertion  # XSS protection on redirect_uri
+    config_keys:
+      - otk.fapi.baseline  # enable FAPI baseline profile
+      - otk.fapi.advanced  # enable FAPI advanced profile
+      - otk.id_token.signing.kid  # Key ID for id_token signing
+      - otk.id_token.signing.algorithm  # PS256 for FAPI
+      - otk.par.enabled  # Pushed Authorization Requests
+      - otk.ciba.enabled  # Client Initiated Backchannel Authentication
+      - x-fapi-interaction-id  # FAPI required header
+    flow: |
+      FAPI Baseline: mTLS_required → validate_par_request → authenticate → issue_token(PS256_signed) → add_interaction_id_header
+      FAPI Advanced: baseline + certificate_bound_tokens + JARM_response_mode + signed_request_objects
+    keywords:
+      - fapi
+      - financial api
+      - open banking
+      - mTLS
+      - pushed authorization
+      - jarm
+      - id token
+  kong:
+    plugins:
+      - name: openid-connect
+        config:
+          issuer: "REPLACE-OIDC-ISSUER"
+          auth_methods:
+            - private_key_jwt
+          token_endpoint_auth_method: tls_client_auth
+          pushed_authorization_request: true
+      - name: mtls-auth
+        config:
+          ca_certificates:
+            - "REPLACE-CA-CERT-ID"
+          skip_consumer_lookup: false
+      - name: request-transformer
+        config:
+          add:
+            headers:
+              - "x-fapi-interaction-id:$(request_id)"
+    requires_review: true
+    review_notes:
+      - "FAPI compliance requires Kong Enterprise openid-connect + mtls-auth plugins working together"
+      - "L7 OTK FAPI profile = Kong openid-connect with pushed_authorization_request + tls_client_auth"
+      - "PS256 signing: ensure Kong OIDC provider supports PS256 algorithm"
+      - "JARM (JWT Secured Authorization Response Mode): verify OIDC provider supports response_mode=jwt"
+      - "CIBA (backchannel auth): no direct Kong equivalent - requires custom plugin or IdP-level support"
+      - "x-fapi-interaction-id: use request-transformer to auto-generate from Kong request_id"
+      - "65+ OTK cluster properties define token lifetimes, algorithms, and feature flags - extract and map to OIDC provider config"
+  metadata:
+    contributor: layer7-community-otk-customizations
+    confidence: 0.75

@@ -75,11 +75,72 @@ ASSERTION_REVIEW_REASONS: dict[str, str] = {
     "CustomizeErrorResponse": "Error response customization maps to exit-transformer plugin (Enterprise)",
     # XML tag name aliases and new types from Layer7-Community/Sample-Policies
     "OversizedTextAssertion": "XML size limits map to xml-threat-protection plugin (Enterprise) - verify thresholds",
+    "OversizedText": "XML size limits map to xml-threat-protection plugin (Enterprise) - verify thresholds",
     "JsonDocumentStructureAssertion": "JSON structure limits map to json-threat-protection plugin (Enterprise)",
+    "JsonDocumentStructure": "JSON structure limits map to json-threat-protection plugin (Enterprise)",
     "CrossSiteScriptingProtectionAssertion": "XSS patterns can be implemented in pre-function Lua regex matching",
     "CertificateAttributes": "Certificate attribute extraction maps to mtls-auth plugin context variables",
     "Email": "SMTP email sending has no Kong equivalent - move to backend notification service",
     "RESTGatewayManagement": "Internal gateway management API has no Kong equivalent - use Kong Admin API",
+    # Graphman catalog: auth & identity
+    "OAuth2Introspection": "OAuth2 token introspection maps to openid-connect plugin introspection mode",
+    "HttpNegotiate": "SPNEGO/Negotiate auth maps to openid-connect with Kerberos IdP migration",
+    "KerberosAuthentication": "Kerberos auth maps to openid-connect - requires IdP migration to OIDC",
+    "NtlmAuthentication": "NTLM auth maps to openid-connect - requires IdP migration to OIDC",
+    "SiteMinderChangePassword": "SiteMinder password change maps to openid-connect account management",
+    "SiteMinderEnableUser": "SiteMinder user enable maps to openid-connect account management",
+    "SpecificUser": "Specific user identity check maps to ACL plugin consumer restriction",
+    "MemberOfGroup": "Group membership check maps to ACL plugin group restriction",
+    "IdentityAttributes": "Identity attribute extraction via pre-function Lua kong.client.get_credential()",
+    "VariableCredentialSource": "Dynamic credential extraction maps to pre-function with auth plugin chain",
+    "ManageCookie": "Cookie management maps to session plugin or pre-function Lua",
+    "Radius": "RADIUS authentication maps to pre-function callout - consider OIDC migration",
+    # Graphman catalog: JWT & crypto
+    "JwtDecode": "JWT decode alias - maps to jwt plugin for validation",
+    "CreateJsonWebKey": "JWK creation maps to jwt-signer plugin key management",
+    "GenerateOAuthSignatureBaseString": "OAuth 1.0 signature maps to pre-function Lua HMAC",
+    "CsrSigner": "CSR signing maps to pre-function with Kong certificate management API",
+    # Graphman catalog: GraphQL & validation
+    "GatewayGraphQL": "GraphQL processing maps to graphql-rate-limiting-advanced plugin (Enterprise)",
+    "GraphQLExtractValue": "GraphQL value extraction maps to jq plugin for response manipulation",
+    "GraphQLSchemaValidation": "GraphQL schema validation maps to graphql-rate-limiting-advanced (Enterprise)",
+    "OdataValidation": "OData validation maps to request-validator plugin with custom schema",
+    "ApplyJSONPatch": "JSON Patch (RFC 6902) maps to jq plugin for document transformation",
+    # Graphman catalog: Kafka
+    "KafkaRouting": "Kafka routing maps to kafka-upstream plugin (Enterprise)",
+    "KafkaConsumer": "Kafka consumer maps to kafka-upstream plugin consumer mode (Enterprise)",
+    "KafkaTransact": "Kafka transactional maps to kafka-upstream plugin (Enterprise)",
+    # Graphman catalog: rate limiting & circuit breaker
+    "CircuitBreaker": "Circuit breaker maps to pre-function Lua with shared dict state tracking",
+    "RateLimitQuery": "Rate limit query maps to rate-limiting-advanced plugin status API",
+    "ThroughputQuotaQuery": "Throughput quota query maps to rate-limiting-advanced plugin status API",
+    # Graphman catalog: routing aliases
+    "HttpRouting": "HTTP routing maps to Kong service/upstream configuration",
+    "Http2Routing": "HTTP/2 routing maps to Kong service/upstream with http2 config",
+    "Http2Transport": "HTTP/2 transport maps to Kong upstream with grpc/http2 protocol",
+    "Ssl": "SSL/TLS assertion maps to mtls-auth plugin or route TLS config",
+    "Swagger": "Swagger validation maps to request-validator plugin",
+    "JSONSchema": "JSON Schema validation maps to request-validator plugin",
+    # Graphman catalog: observability
+    "OtelMeter": "OpenTelemetry metrics maps to opentelemetry plugin (native Kong support)",
+    "IcapAntivirusScanner": "ICAP antivirus maps to pre-function Lua with external scanner callout",
+    # Graphman catalog: data manipulation
+    "HtmlFormData": "HTML form data handling maps to request-transformer plugin",
+    "ReplaceTagContent": "XML tag content replacement maps to pre-function Lua with xml2lua",
+    "SelectElement": "XML element selection maps to pre-function Lua with XPath-like traversal",
+    "LookupDynamicContextVariables": "Dynamic variable lookup maps to pre-function Lua kong.ctx.shared",
+    "IndexLookupByItem": "Index lookup maps to pre-function Lua table operations",
+    "ItemLookupByIndex": "Item lookup maps to pre-function Lua table operations",
+    # Graphman catalog: SAML aliases
+    "RequireWssSaml": "WS-Security SAML maps to openid-connect - requires SAML-to-OIDC migration",
+    "RequireWssSaml2": "WS-Security SAML 2.0 maps to openid-connect - requires SAML-to-OIDC migration",
+    "SamlIssuer": "SAML issuer maps to openid-connect token issuance (Enterprise)",
+    "SetSamlStatus": "SAML status setting maps to pre-function for OIDC error response shaping",
+    # Community custom assertions
+    "EvaluateMathExpressionAssertion": "Math expression evaluation maps to pre-function Lua math library",
+    "DelayAssertion": "Delay/sleep maps to pre-function Lua ngx.sleep() - dev/test only",
+    "InjectionFilterAssertion": "Injection filter maps to pre-function Lua regex patterns or WAF integration",
+    "SshCommandAssertion": "SSH command execution has no Kong equivalent - move to backend service",
 }
 
 

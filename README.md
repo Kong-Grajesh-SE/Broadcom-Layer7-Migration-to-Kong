@@ -8,7 +8,7 @@
 
 ## Why This Exists
 
-Enterprises running Broadcom Layer 7 (CA API Gateway) face a complex migration path to Kong. Policies are deeply nested XML with 100+ assertion types spanning authentication, traffic control, transformation, routing, and protocol bridging. Manual migration is slow, error-prone, and expensive.
+Enterprises running Broadcom Layer 7 (CA API Gateway) face a complex migration path to Kong. Policies are deeply nested XML with 247+ assertion types spanning authentication, traffic control, transformation, routing, and protocol bridging. Manual migration is slow, error-prone, and expensive.
 
 This framework automates 75-85% of that work by parsing Layer 7 exports, classifying every assertion by migration complexity, and generating production-ready Kong Gateway 3.14 declarative YAML — leveraging Enterprise plugins like `xml-threat-protection`, `kafka-upstream`, `opa`, and `exit-transformer` for broader coverage, with AI-assisted analysis for the hard cases.
 
@@ -16,7 +16,7 @@ This framework automates 75-85% of that work by parsing Layer 7 exports, classif
 
 | Metric | Value |
 |--------|-------|
-| Assertion types recognized | **115** (20 auto-generate, 55 with review, 40 AI/manual) |
+| Assertion types recognized | **273** (35 auto-generate, 109 with review, 129 AI/manual) |
 | Assertion-specific extractors | **72** |
 | OTK bundle automation rate | **83%** (130 real OAuth/OIDC policies, 1596 assertions) |
 | Simple service automation | **100%** |
@@ -41,9 +41,9 @@ This framework automates 75-85% of that work by parsing Layer 7 exports, classif
               ┌──────────────────▼──────────────────┐
               │          CLASSIFICATION              │
               │                                      │
-              │  DIRECT (20)     → auto-generate     │
-              │  CONDITIONAL (55) → generate + review │
-              │  CUSTOM (40)     → AI analysis       │
+              │  DIRECT (35)      → auto-generate     │
+              │  CONDITIONAL (109) → generate + review │
+              │  CUSTOM (129)     → AI analysis       │
               └──────────┬───────────────┬───────────┘
                          │               │
               ┌──────────▼───┐   ┌───────▼──────────┐
@@ -139,7 +139,7 @@ uv run migrate pattern list
 ├── src/layer7_kong_migration/
 │   ├── cli.py                  # 7 CLI commands (analyze, generate, report, vaults, ...)
 │   ├── ingestion/              # XML/JSON parsing, 72 assertion extractors
-│   ├── analysis/               # Three-tier classification (115 assertion types)
+│   ├── analysis/               # Three-tier classification (273 assertion types)
 │   ├── generation/             # Kong YAML generator, 23 plugin generators, vault mapper
 │   ├── ai/                     # Claude API integration, caching, pattern learning
 │   ├── patterns/               # Weighted similarity matcher + YAML pattern library
@@ -147,7 +147,8 @@ uv run migrate pattern list
 │   └── models/                 # Pydantic IR (PolicyBundle) + Kong output models
 ├── knowledge/
 │   ├── mappings/               # Assertion-to-plugin YAML mappings
-│   └── patterns/               # Seed + AI-learned migration patterns
+│   ├── patterns/               # 15 migration pattern files (auth, routing, security, AI gateway...)
+│   └── reference/              # Full assertion catalog (273 types) + Graphman entity types (47)
 ├── samples/                    # Test bundles (synthetic + real OTK policies)
 ├── tests/                      # 58 unit tests
 ├── validation/                 # Docker-based Kong 3.14 validation environment

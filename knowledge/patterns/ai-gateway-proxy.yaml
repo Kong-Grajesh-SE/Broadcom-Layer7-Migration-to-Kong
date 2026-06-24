@@ -1,0 +1,61 @@
+pattern:
+  id: ai-gateway-proxy
+  name: "AI Gateway LLM Proxy with Model Restriction and Token Cost Tracking"
+  description: "Layer 7 as AI Gateway proxy for LLMs: restricts models via JavaScript rewrite, enforces per-user/per-agent quotas, tracks token costs from response eval_count"
+  source: "Layer7-Community/aigw"
+  layer7:
+    assertion_types:
+      - JavaScript  # model restriction rewrite, token cost parsing
+      - ThroughputQuota  # per-user and per-agent rate limiting
+      - HttpRoutingAssertion  # route to LLM backend (Ollama)
+      - CacheLookup  # accumulated token cost lookup
+      - CacheStorage  # accumulated token cost storage
+      - SetVariable  # compose quota keys, cost variables
+      - ComparisonAssertion  # quota breach check
+      - HardcodedResponse  # fake LLM response on quota breach
+    config_keys:
+      - aigw-user-${userid}  # per-user quota key
+      - aigw-${appid}  # per-agent quota key
+      - request.model  # LLM model name from request
+      - response.eval_count  # token count from Ollama response
+    flow: "restrict_model(js) → check_quota(per_user + per_agent) → route_to_llm → parse_cost(eval_count) → accumulate_cost(cache) → respond"
+    keywords:
+      - ai gateway
+      - llm proxy
+      - model restriction
+      - token cost
+      - quota
+      - ollama
+  kong:
+    plugins:
+      - name: ai-proxy
+        config:
+          route_type: llm/v1/chat
+          model:
+            provider: ollama
+            name: "REPLACE-ALLOWED-MODEL"
+            options:
+              upstream_url: "http://REPLACE-OLLAMA-HOST:11434"
+      - name: ai-rate-limiting-advanced
+        config:
+          limit:
+            - 100000  # token limit per window
+          window_size:
+            - 3600
+          identifier: consumer
+          token_counting: true
+      - name: ai-prompt-guard
+        config:
+          allow_patterns:
+            - ".*"
+    requires_review: true
+    review_notes:
+      - "Kong AI Gateway plugins (ai-proxy, ai-rate-limiting-advanced, ai-prompt-guard) replace the entire L7 pattern"
+      - "Model restriction: ai-proxy config.model.name enforces allowed model"
+      - "Token cost tracking: ai-rate-limiting-advanced with token_counting replaces JavaScript eval_count parsing"
+      - "Per-user quota: ai-rate-limiting-advanced with consumer identifier"
+      - "Prompt interject pattern (fake LLM response on error): use exit-transformer or ai-response-transformer"
+      - "Layer 7 returns role:'apisecurity' on quota breach; configure Kong error response format to match LLM API schema"
+  metadata:
+    contributor: layer7-community-aigw
+    confidence: 0.85

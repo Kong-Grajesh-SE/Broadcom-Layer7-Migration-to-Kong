@@ -1,0 +1,243 @@
+reference:
+  id: graphman-entity-types
+  name: "Graphman Entity Type Catalog (v11.2.1)"
+  description: "Complete list of 47 active + 11 deprecated Graphman entity types. Maps Layer 7 bundle entity types to Kong declarative YAML equivalents."
+  source: "Layer7-Community/graphman-client/schema/v11.2.1"
+
+  entity_types:
+    # === CORE GATEWAY ENTITIES ===
+    services:
+      l7_type: L7Service
+      kong_equivalent: services + routes
+      migration_notes: "Each L7 service → Kong service + route(s). Resolution path → route paths."
+
+    policies:
+      l7_type: L7Policy
+      kong_equivalent: plugins (pre-function/post-function)
+      migration_notes: "Standalone policies → Kong plugins or shared Lua modules."
+
+    folders:
+      l7_type: Folder
+      kong_equivalent: tags/workspaces
+      migration_notes: "L7 folder hierarchy → Kong tags or Enterprise workspaces."
+
+    encassConfigs:
+      l7_type: EncapsulatedAssertion
+      kong_equivalent: shared plugins/Lua modules
+      migration_notes: "Reusable policy fragments → Kong plugin chains or shared Lua code."
+
+    schemas:
+      l7_type: Schema
+      kong_equivalent: request-validator schemas
+      migration_notes: "XML/JSON schemas → request-validator plugin config or Kong schema registry."
+
+    dtds:
+      l7_type: DTD
+      kong_equivalent: null
+      migration_notes: "DTD validation has no Kong equivalent. Convert to JSON Schema where possible."
+
+    serviceAliases:
+      l7_type: L7ServiceAlias
+      kong_equivalent: routes (additional paths)
+      migration_notes: "Service aliases → additional Kong routes pointing to same service."
+
+    policyAliases:
+      l7_type: L7PolicyAlias
+      kong_equivalent: plugin references
+      migration_notes: "Policy aliases → plugin references or shared Lua module requires."
+
+    # === SECURITY / IDENTITY ===
+    keys:
+      l7_type: SSGKeyEntry
+      kong_equivalent: certificates/keys entities
+      migration_notes: "Private keys → Kong certificate entities via Admin API or vault references."
+
+    trustedCerts:
+      l7_type: Certificate
+      kong_equivalent: ca_certificates
+      migration_notes: "Trusted CA certs → Kong ca_certificates entities for mtls-auth."
+
+    secrets:
+      l7_type: SecurePassword
+      kong_equivalent: vault references
+      migration_notes: "Stored passwords → Kong vault references ({vault://env/secret-name})."
+
+    internalIdps:
+      l7_type: InternalIdp
+      kong_equivalent: consumers
+      migration_notes: "Internal identity provider users → Kong consumers with credentials."
+
+    internalGroups:
+      l7_type: InternalGroup
+      kong_equivalent: consumer_groups
+      migration_notes: "Internal groups → Kong consumer groups for ACL/rate-limiting."
+
+    internalUsers:
+      l7_type: InternalUser
+      kong_equivalent: consumers
+      migration_notes: "Internal users → Kong consumers with basic-auth/key-auth credentials."
+
+    federatedIdps:
+      l7_type: FederatedIdp
+      kong_equivalent: openid-connect plugin config
+      migration_notes: "Federated IdPs → Kong openid-connect plugin with OIDC discovery URL."
+
+    federatedGroups:
+      l7_type: FederatedGroup
+      kong_equivalent: acl plugin groups
+      migration_notes: "Federated groups → Kong ACL plugin allow/deny groups."
+
+    federatedUsers:
+      l7_type: FederatedUser
+      kong_equivalent: consumers
+      migration_notes: "Federated users → Kong consumers mapped via OIDC claims."
+
+    simpleLdapIdps:
+      l7_type: SimpleLdapIdp
+      kong_equivalent: openid-connect (LDAP-backed OIDC)
+      migration_notes: "LDAP IdPs → migrate to OIDC provider with LDAP backend."
+
+    ldapIdps:
+      l7_type: LdapIdp
+      kong_equivalent: openid-connect (LDAP-backed OIDC)
+      migration_notes: "Full LDAP IdPs → migrate to OIDC provider with LDAP backend."
+
+    policyBackedIdps:
+      l7_type: PolicyBackedIdp
+      kong_equivalent: custom auth plugin
+      migration_notes: "Policy-backed IdPs → custom Kong auth plugin or external auth service."
+
+    roles:
+      l7_type: RbacRole
+      kong_equivalent: Kong RBAC roles (Enterprise)
+      migration_notes: "Gateway RBAC roles → Kong Enterprise RBAC via Admin API."
+
+    passwordPolicies:
+      l7_type: PasswordPolicy
+      kong_equivalent: null
+      migration_notes: "Password policies are IdP-level config, not gateway-level in Kong."
+
+    firewallRules:
+      l7_type: FirewallRule
+      kong_equivalent: ip-restriction plugin
+      migration_notes: "IP-based firewall rules → Kong ip-restriction plugin allow/deny lists."
+
+    # === INFRASTRUCTURE ===
+    clusterProperties:
+      l7_type: ClusterProperty
+      kong_equivalent: environment variables / vault references
+      migration_notes: "Cluster-wide properties → Kong environment variables or vault references."
+
+    listenPorts:
+      l7_type: ListenPort
+      kong_equivalent: Kong listeners (kong.conf)
+      migration_notes: "Listen port config → kong.conf proxy_listen / admin_listen directives."
+
+    httpConfigurations:
+      l7_type: HttpConfiguration
+      kong_equivalent: upstream config
+      migration_notes: "HTTP connection settings → Kong upstream connect/read/write timeouts."
+
+    jdbcConnections:
+      l7_type: JdbcConnection
+      kong_equivalent: null (move to backend)
+      migration_notes: "JDBC connections should move to backend services. Kong doesn't proxy DB."
+
+    cassandraConnections:
+      l7_type: CassandraConnection
+      kong_equivalent: null (move to backend)
+      migration_notes: "Cassandra connections should move to backend services."
+
+    jmsDestinations:
+      l7_type: JmsDestination
+      kong_equivalent: null (architectural change)
+      migration_notes: "JMS destinations → event-driven architecture with message broker sidecar."
+
+    activeConnectors:
+      l7_type: ActiveConnector
+      kong_equivalent: null (architectural change)
+      migration_notes: "Active connectors (MQ listeners, etc.) → event-driven architecture."
+
+    emailListeners:
+      l7_type: EmailListener
+      kong_equivalent: null (move to backend)
+      migration_notes: "Email listeners → backend email processing service."
+
+    logSinks:
+      l7_type: LogSink
+      kong_equivalent: logging plugins (http-log, tcp-log, syslog, etc.)
+      migration_notes: "Log sinks → Kong logging plugins: http-log, tcp-log, syslog, file-log."
+
+    # === OPERATIONAL ===
+    scheduledTasks:
+      l7_type: ScheduledTask
+      kong_equivalent: ngx.timer.every() in custom plugin
+      migration_notes: "Scheduled tasks → ngx.timer.every() in init_worker phase of custom plugin."
+
+    globalPolicies:
+      l7_type: GlobalPolicy
+      kong_equivalent: global plugins
+      migration_notes: "Global policies → Kong global plugins (applied to all routes/services)."
+
+    backgroundTaskPolicies:
+      l7_type: BackgroundTaskPolicy
+      kong_equivalent: custom plugin worker phase
+      migration_notes: "Background tasks → custom Kong plugin init_worker/log phase."
+
+    policyBackedServices:
+      l7_type: PolicyBackedService
+      kong_equivalent: custom plugins
+      migration_notes: "Policy-backed services → custom Kong plugins providing service logic."
+
+    auditConfigurations:
+      l7_type: AuditConfiguration
+      kong_equivalent: logging plugin config
+      migration_notes: "Audit config → Kong logging plugin configuration (log level, retention)."
+
+    revocationCheckPolicies:
+      l7_type: RevocationCheckPolicy
+      kong_equivalent: mtls-auth revocation config
+      migration_notes: "CRL/OCSP config → mtls-auth plugin revocation_check_mode."
+
+    serviceResolutionConfigs:
+      l7_type: ServiceResolutionConfig
+      kong_equivalent: route matching rules
+      migration_notes: "Service resolution → Kong route matching (paths, headers, methods)."
+
+    smConfigs:
+      l7_type: SiteMinderConfig
+      kong_equivalent: openid-connect plugin
+      migration_notes: "SiteMinder config → migrate to OIDC provider, use openid-connect plugin."
+
+    kerberosConfigs:
+      l7_type: KerberosConfig
+      kong_equivalent: openid-connect plugin (Kerberos IdP)
+      migration_notes: "Kerberos config → migrate to OIDC with Kerberos-capable IdP."
+
+    customKeyValues:
+      l7_type: CustomKeyValue
+      kong_equivalent: vault references or plugin config
+      migration_notes: "Custom key-value pairs → Kong vault references or plugin config fields."
+
+    genericEntities:
+      l7_type: GenericEntity
+      kong_equivalent: varies
+      migration_notes: "Generic entities are catch-all. Inspect content to determine Kong equivalent."
+
+    # === DEPRECATED (still in older exports) ===
+    deprecated_types:
+      - webApiServices  # → services
+      - soapServices  # → services
+      - internalWebApiServices  # → services
+      - internalSoapServices  # → services
+      - policyFragments  # → policies
+      - fips  # → federatedIdps
+      - fipUsers  # → federatedUsers
+      - fipGroups  # → federatedGroups
+      - ldaps  # → ldapIdps
+
+  bundle_format:
+    description: "Flat JSON with plural entity keys → arrays of entity objects"
+    properties_key: "properties"
+    default_action: "NEW_OR_UPDATE"
+    per_type_mappings: "action overrides per entity type"

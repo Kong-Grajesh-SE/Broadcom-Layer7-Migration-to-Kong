@@ -1,0 +1,60 @@
+pattern:
+  id: config-cache-scheduled
+  name: "Scheduled Configuration Cache with External Config Service"
+  description: "Scheduled task fetches config XML from external service, XPath-extracts parameters, stores in named caches. Runtime policy serves cached values with cache-miss error handling."
+  source: "Layer7-Community/Demos/Configuration-Cache-Demo"
+  layer7:
+    assertion_types:
+      - HttpRoutingAssertion  # fetch config from external service
+      - ResponseXpathAssertion  # extract /configuration/service elements
+      - ForEachLoop  # iterate services and parameters
+      - CacheStorage  # store key=parameter-${name} in cache=configCache-${path}
+      - CacheLookup  # retrieve cached config at runtime
+      - SetVariable  # extract request.url.path, compose cache keys
+      - HardcodedResponse  # static config XML, cached response template
+      - CustomizeErrorResponse  # 404 on cache miss
+      - Encapsulated  # routing logic as reusable fragment
+      - ComparisonAssertion  # httprouting.reasonCode error branching
+      - FalseAssertion  # halt on error
+      - AuditDetailAssertion  # debug logging
+    config_keys:
+      - configCache-${path}  # dynamic cache name per service path
+      - parameter-${name}  # dynamic cache key per parameter
+      - httprouting.reasonCode  # -1=HostNotFound, -2=BadURL, -3=ConnTimeout, -4=ReadTimeout, -5=Undefined
+    flow: |
+      SCHEDULED (cron */10 * * * * ?):
+        route_to_config_service → xpath_extract_services → foreach(service: foreach(param: cache_store))
+      RUNTIME:
+        extract_path → cache_lookup(url, readTimeout, connectTimeout) → on_miss(404) → respond_with_cached_values
+    keywords:
+      - scheduled task
+      - configuration cache
+      - dynamic cache keys
+      - xpath extraction
+      - foreach loop
+  kong:
+    plugins:
+      - name: pre-function
+        config:
+          access:
+            - "-- Lua timer replaces L7 scheduled task\n-- ngx.timer.every(600, function() fetch_and_cache_config() end)"
+      - name: proxy-cache-advanced
+        config:
+          strategy: memory
+          memory:
+            dictionary_name: kong_db_cache
+          cache_ttl: 600
+    kong_config:
+      service:
+        url: "REPLACE-CONFIG-SERVICE-URL"
+    requires_review: true
+    review_notes:
+      - "L7 SCHEDULED_TASK entity → Kong ngx.timer.every() in pre-function or custom plugin init_worker phase"
+      - "L7 dynamic cache names (configCache-${path}) → Kong proxy-cache-advanced with custom cache_key or kong.cache API"
+      - "L7 ForEachLoop + XPath → custom Lua with xml2lua library or pre-transform to JSON"
+      - "L7 Encapsulated assertion (reusable routing fragment) → Kong shared Lua module"
+      - "L7 httprouting.reasonCode error codes → Kong upstream health checks + post-function error handling"
+      - "GMU bundle entity types: FOLDER, POLICY, SERVICE, ENCAPSULATED_ASSERTION, SCHEDULED_TASK"
+  metadata:
+    contributor: layer7-community-demos
+    confidence: 0.70

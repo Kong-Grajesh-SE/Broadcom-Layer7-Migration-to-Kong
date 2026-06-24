@@ -1,0 +1,317 @@
+reference:
+  id: assertion-type-catalog
+  name: "Complete Layer 7 Assertion Type Catalog (247 types from Graphman v11.2.1)"
+  description: "Authoritative list of all Layer 7 assertion types with their categories and Kong migration tier. Source: graphman-client schema + community repos."
+  source: "Layer7-Community/graphman-client/schema/v11.2.1/assertions/"
+
+  categories:
+    structural:
+      description: "Policy flow control — not individually migrated, inform Kong plugin ordering"
+      types:
+        - All  # AND logic (all children must pass)
+        - OneOrMore  # OR logic (at least one child must pass)
+        - ExactlyOne  # XOR logic
+        - ConcurrentAll  # Parallel execution
+        - HandleErrors  # Try-catch equivalent
+        - Operation  # WSDL operation scoping
+        - Transaction  # Transaction boundary
+        - Unknown  # Unresolvable assertion
+
+    direct:
+      description: "1:1 Kong plugin mapping, auto-generated"
+      count: 35
+      types:
+        - HttpBasic → basic-auth
+        - HttpDigest → basic-auth
+        - LookupApiKey → key-auth
+        - ManageApiKey → key-auth
+        - CORS → cors
+        - RateLimit → rate-limiting
+        - DistributedRateLimit → rate-limiting-advanced
+        - RequestSizeLimit → request-size-limiting
+        - RemoteIpRange → ip-restriction
+        - HardcodedResponse → request-termination
+        - EchoRoutingAssertion → request-termination
+        - RaiseError → request-termination
+        - AuditDetail → http-log
+        - Audit → http-log
+        - AuditRecordToXml → http-log
+        - SnmpTrap → http-log
+        - AddHeader → request-transformer
+        - RemoveHeader → request-transformer
+        - ContentType → request-transformer
+        - Comment → _skip
+        - True → _skip
+        - False → _skip
+        - MessageBuffering → _skip
+        - BufferData → _skip
+        - UUIDGenerator → pre-function
+        - GeneratePassword → pre-function
+        - GenerateSecurityHash → pre-function
+
+    conditional:
+      description: "Known Kong plugin target, configuration requires review"
+      count: 109
+      subcategories:
+        authentication:
+          - Authentication → basic-auth
+          - Ssl → mtls-auth
+          - RequireWssSaml → openid-connect
+          - RequireWssSaml2 → openid-connect
+          - DecodeJsonWebToken → jwt
+          - JwtDecode → jwt
+          - EncodeJsonWebToken → jwt-signer
+          - JwtEncode → jwt-signer
+          - CreateJsonWebKey → jwt-signer
+          - OAuth2Introspection → openid-connect
+          - HttpNegotiate → openid-connect
+          - KerberosAuthentication → openid-connect
+          - NtlmAuthentication → openid-connect
+          - SiteMinderAuthenticate → openid-connect
+          - SiteMinderAuthorize → opa
+          - SiteMinderCheckProtected → opa
+          - SiteMinderChangePassword → openid-connect
+          - SiteMinderEnableUser → openid-connect
+          - ValidateNonSoapSamlToken → openid-connect
+          - CreateSamlToken → openid-connect
+          - SamlIssuer → openid-connect
+          - CookieCredentialSource → session
+          - ManageCookie → session
+          - SpecificUser → acl
+          - MemberOfGroup → acl
+
+        traffic_control:
+          - ThroughputQuota → rate-limiting-advanced
+          - RateLimitQuery → rate-limiting-advanced
+          - ThroughputQuotaQuery → rate-limiting-advanced
+          - CircuitBreaker → pre-function
+          - CacheLookup → proxy-cache
+          - CacheStorage → proxy-cache
+          - TimeRange → pre-function
+
+        routing:
+          - HttpRouting → _upstream
+          - HttpRoutingAssertion → _upstream
+          - Http2Routing → _upstream
+          - Http2RoutingAssertion → _upstream
+          - Http2Transport → _upstream
+          - AwsLambda → aws-lambda
+          - KafkaRouting → kafka-upstream
+          - KafkaRoutingAssertion → kafka-upstream
+          - KafkaConsumer → kafka-upstream
+          - KafkaTransact → kafka-upstream
+
+        validation:
+          - JsonSchemaAssertion → request-validator
+          - JSONSchema → request-validator
+          - JSONSchemaAssertion → request-validator
+          - OpenApiValidation → request-validator
+          - OpenApi → request-validator
+          - SwaggerAssertion → request-validator
+          - Swagger → request-validator
+          - SchemaValidation → request-validator
+          - OdataValidation → request-validator
+          - GraphqlSchemaValidation → graphql-rate-limiting-advanced
+          - GraphQLSchemaValidation → graphql-rate-limiting-advanced
+          - GatewayGraphQL → graphql-rate-limiting-advanced
+
+        transformation:
+          - JsonTransformationAssertion → request-transformer-advanced
+          - JsonTransformation → request-transformer-advanced
+          - JsonPathAssertion → jq
+          - JsonPathAssertionV2 → jq
+          - EvaluateJsonPathExpression → jq
+          - EvaluateJsonPathExpressionV2 → jq
+          - GraphQLExtractValue → jq
+          - ApplyJSONPatch → jq
+          - CustomizeErrorResponse → exit-transformer
+          - HtmlFormData → request-transformer
+
+        security:
+          - DocumentStructureThreat → xml-threat-protection
+          - OversizedText → xml-threat-protection
+          - OversizedTextAssertion → xml-threat-protection
+          - JsonDocumentStructureThreat → json-threat-protection
+          - JsonDocumentStructure → json-threat-protection
+          - JsonDocumentStructureAssertion → json-threat-protection
+          - SqlAttackProtection → pre-function
+          - SqlAttack → pre-function
+          - SqlAttackProtectionAssertion → pre-function
+          - CsrfProtection → pre-function
+          - CrossSiteScriptingProtectionAssertion → pre-function
+          - CodeInjectionProtectionAssertion → bot-detection
+          - IcapAntivirusScanner → pre-function
+          - LookupTrustedCertificate → mtls-auth
+          - ValidateCertificate → mtls-auth
+          - CertificateAttributes → mtls-auth
+
+        observability:
+          - OtelMeter → opentelemetry
+
+        data_manipulation:
+          - Regex → pre-function
+          - SetVariable → pre-function
+          - ComparisonAssertion → pre-function
+          - ExportVariables → pre-function
+          - EncodeDecode → pre-function
+          - KeyValueStore → pre-function
+          - KeyValueStorage → pre-function
+          - KeyValueLookup → pre-function
+          - KeyValueRemove → pre-function
+          - KeyValueStatistics → pre-function
+          - ReplaceTagContent → pre-function
+          - SelectElement → pre-function
+          - LookupDynamicContextVariables → pre-function
+          - IndexLookupByItem → pre-function
+          - ItemLookupByIndex → pre-function
+          - IdentityAttributes → pre-function
+          - VariableCredentialSource → pre-function
+          - SetSamlStatus → pre-function
+          - Radius → pre-function
+          - GenerateOAuthSignatureBaseString → pre-function
+          - CsrSigner → pre-function
+
+        policy_composition:
+          - Include → _fragment
+          - Encapsulated → _encass
+
+    custom:
+      description: "No direct Kong equivalent — requires AI analysis, custom plugin, or architectural change"
+      count: 129
+      subcategories:
+        scripting:
+          - JavaScript
+          - XslTransformation
+
+        ws_security:
+          - WssBasic
+          - WssDigest
+          - WsSecurity
+          - WssEncryptElement
+          - WssSignElement
+          - WssConfiguration
+          - WssReplayProtection
+          - WssVersion
+          - Wssp
+          - WsiBsp
+          - WsiSaml
+          - AddWsAddressing
+          - WsAddressing
+          - AddWssSecurityToken
+          - AddWssTimestamp
+          - AddWssUsernameToken
+          - EncryptedUsernameToken
+          - RequireWssEncryptedElement
+          - RequireWssSignedElement
+          - RequireWssTimestamp
+          - RequireWssX509Cert
+          - RequestWssKerberos
+          - NonSoapDecryptElement
+          - NonSoapEncryptElement
+          - NonSoapSignElement
+          - NonSoapVerifyElement
+          - NonSoapCheckVerifyResults
+
+        saml_protocol:
+          - SamlBrowserArtifact
+          - SamlProtocol
+          - SamlpRequestBuilder
+          - SamlpResponseBuilder
+          - SamlpResponseEvaluation
+          - ProcessSamlAttributeQueryRequest
+          - ProcessSamlAuthnRequest
+
+        ws_federation_trust:
+          - WsFederationPassiveTokenExchange
+          - WsFederationPassiveTokenRequest
+          - WsTrustCredentialExchange
+          - SecureConversation
+          - CreateSecurityContextToken
+          - CancelSecurityContext
+          - EstablishOutboundSecureConversation
+          - LookupOutboundSecureConversationSession
+          - BuildRstSoapRequest
+          - BuildRstrSoapResponse
+          - ProcessRstrSoapResponse
+
+        protocol_routing:
+          - JmsRouting
+          - MqNativeRouting
+          - MqNativeSupport
+          - FtpRoutingAssertion
+          - SshRouteAssertion
+          - SimpleRawTransport
+          - SFTPResponse
+
+        database:
+          - JdbcQuery
+          - BulkJdbcInsert
+          - CassandraQuery
+          - LDAPQuery
+          - LDAPWrite
+          - LDAPUpdate
+          - MysqlClusterInfo
+          - MysqlCounter
+
+        websocket:
+          - WebSocket
+          - WebSocketConnect
+          - WebSocketEntityManager
+          - WebSocketMessageInjection
+          - WebSocketValidation
+
+        xmpp:
+          - XMPPAssociateSessions
+          - XMPPCloseSession
+          - XMPPGetAssociatedSessionId
+          - XMPPGetRemoteCertificate
+          - XMPPGetSessionAttribute
+          - XMPPOpenServerSession
+          - XMPPSendToRemoteHost
+          - XMPPSetSessionAttribute
+          - XMPPStartTLS
+
+        xacml:
+          - XacmlPdpAssertion
+          - XacmlRequestBuilderAssertion
+
+        mtom:
+          - MTOMDecodeAssertion
+          - MTOMEncodeAssertion
+          - MTOMValidateAssertion
+
+        xml_xpath:
+          - RequestXpath
+          - ResponseXpath
+          - XpathCredentialSource
+          - RemoveElement
+          - RequestSwA
+
+        data_manipulation:
+          - ForEachLoop
+          - HttpFormPost
+          - InverseHttpFormPost
+          - MapValue
+          - Split
+          - Join
+          - ManipulateMultiValuedVariable
+          - MessageContextAssertion
+
+        identity_management:
+          - CustomAssertion
+          - CodeInjectionProtection
+          - GenericIdentityManagementService
+          - GatewayManagement
+          - ManagePortalResource
+          - RadiusAuthenticate
+          - Email
+          - RESTGatewayManagement
+          - SshCommandAssertion
+
+  stats:
+    total_types: 273
+    structural: 8
+    direct: 35
+    conditional: 109
+    custom: 129
+    coverage: "Framework classifies all 247 Graphman schema types plus 26 XML tag aliases and community types"

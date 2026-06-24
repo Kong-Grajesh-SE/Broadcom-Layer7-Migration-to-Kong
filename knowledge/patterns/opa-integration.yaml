@@ -1,0 +1,52 @@
+pattern:
+  id: opa-integration
+  name: "OPA (Open Policy Agent) Authorization Integration"
+  description: "Layer 7 calls OPA via HTTP for JWT validation and RBAC decisions. Two variants: V1 (Gateway validates JWT, then OPA checks RBAC) and V2 (OPA validates JWT itself)"
+  source: "Layer7-Community/Integrations/gateway-opa-example"
+  layer7:
+    assertion_types:
+      - DecodeJsonWebToken
+      - SetVariable
+      - HttpRoutingAssertion
+      - EvaluateJsonPathExpressionV2
+      - ComparisonAssertion
+      - CustomizeErrorResponse
+      - EncapsulatedAssertion
+    config_keys:
+      - jwt.header.kid
+      - jwt.payload
+      - opa.input  # JSON object built from JWT claims
+      - opa.result  # allow/deny decision
+    flow_v1: "decode_jwt → extract_claims → build_opa_input(claims) → http_post_to_opa → parse_result → allow_or_deny(403)"
+    flow_v2: "build_opa_input(raw_token) → http_post_to_opa(opa_validates_jwt) → parse_result → allow_or_deny(403)"
+    keywords:
+      - opa
+      - open policy agent
+      - authorization
+      - rbac
+      - jwt
+      - policy decision
+  kong:
+    plugins:
+      - name: jwt
+        config:
+          claims_to_verify:
+            - exp
+          key_claim_name: kid
+      - name: opa
+        config:
+          opa_host: "REPLACE-OPA-HOST"
+          opa_port: 8181
+          opa_path: "/v1/data/REPLACE/policy"
+          include_consumer_in_opa_input: true
+          include_parsed_json_body_in_opa_input: false
+    requires_review: true
+    review_notes:
+      - "Kong 3.14 Enterprise has native OPA plugin - direct replacement for HTTP callout pattern"
+      - "V1 pattern: use jwt plugin for validation, then opa plugin for RBAC"
+      - "V2 pattern: use opa plugin alone (OPA validates JWT + RBAC in single call)"
+      - "Migrate Rego policies from Layer 7 OPA config to Kong OPA plugin"
+      - "Layer 7 builds OPA input from context variables; Kong OPA plugin auto-populates from request context"
+  metadata:
+    contributor: layer7-community-integrations
+    confidence: 0.90

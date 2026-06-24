@@ -1,0 +1,47 @@
+pattern:
+  id: metrics-offboxing
+  name: "Metrics Off-Boxing to InfluxDB/Grafana via Gateway Policy"
+  description: "Extracts JSON metrics via 12+ JsonPath expressions, transforms into InfluxDB line protocol, POSTs to InfluxDB via HttpRoutingAssertion"
+  source: "Layer7-Community/Integrations/gateway-metrics-grafana-example"
+  layer7:
+    assertion_types:
+      - EvaluateJsonPathExpression  # x12 extracts for metric fields
+      - SetVariable  # compose InfluxDB tags and measurements
+      - HttpRoutingAssertion  # POST to InfluxDB write API
+      - AuditAssertion  # audit logging for debug
+      - AuditDetailAssertion
+    config_keys:
+      - gateway.metrics.json  # JSON metrics source
+      - influxdb.write.url  # InfluxDB write endpoint
+      - influxdb.line.protocol  # composed measurement string
+    flow: "extract_12_metrics(jsonpath) → compose_tags(set_var) → compose_measurements(set_var) → build_line_protocol(set_var) → post_to_influxdb(http_route)"
+    keywords:
+      - metrics
+      - influxdb
+      - grafana
+      - observability
+      - monitoring
+      - telemetry
+  kong:
+    plugins:
+      - name: prometheus
+        config:
+          per_consumer: true
+          status_code_metrics: true
+          latency_metrics: true
+          bandwidth_metrics: true
+      - name: opentelemetry
+        config:
+          endpoint: "http://REPLACE-OTEL-COLLECTOR:4318/v1/traces"
+          resource_attributes:
+            service.name: "REPLACE-SERVICE-NAME"
+    requires_review: true
+    review_notes:
+      - "Kong has native Prometheus and OpenTelemetry plugins - no custom policy needed"
+      - "L7 metrics off-boxing pattern (12 JsonPath extracts + InfluxDB POST) → Kong prometheus plugin + Grafana scrape"
+      - "For InfluxDB specifically: Prometheus remote-write to InfluxDB, or use Kong's StatsD/Datadog plugins"
+      - "L7 policy-based metric extraction is replaced by Kong's built-in request/response metrics"
+      - "Custom metrics beyond standard latency/status: use pre-function to push to ngx.shared dict + custom Prometheus collector"
+  metadata:
+    contributor: layer7-community-integrations
+    confidence: 0.90
