@@ -71,15 +71,15 @@ This framework automates 75-85% of that work by parsing Layer 7 exports, classif
                     │  GMU · Standalone XML   │
                     └────────────┬────────────┘
                                  │
-              ┌──────────────────▼──────────────────┐
-              │          CLASSIFICATION              │
-              │                                      │
+              ┌──────────────────▼────────────────--──┐
+              │          CLASSIFICATION               │
+              │                                       │
               │  DIRECT (35)      → auto-generate     │
-              │  CONDITIONAL (109) → generate + review │
+              │  CONDITIONAL (109) → generate + review│
               │  CUSTOM (129)     → AI analysis       │
-              └──────────┬───────────────┬───────────┘
+              └──────────┬───────────────┬─────────-──┘
                          │               │
-              ┌──────────▼───┐   ┌───────▼──────────┐
+              ┌──────────▼───┐   ┌───────▼──────────-┐
               │   Pattern    │   │   Claude AI       │
               │   Matcher    │   │   Analyzer        │
               │              │   │   (cache+learn)   │
@@ -92,11 +92,11 @@ This framework automates 75-85% of that work by parsing Layer 7 exports, classif
                     │  Certificates & Keys    │
                     └────────────┬────────────┘
                                  │
-              ┌──────────────────▼──────────────────┐
+              ┌──────────────────▼─────────────────-─┐
               │           REPORTING                  │
               │  HTML Report · Talking Points        │
               │  Vault Reference Map · Env Template  │
-              └─────────────────────────────────────┘
+              └────────────────────────────────────-─┘
 ```
 
 ### Three-Tier Classification

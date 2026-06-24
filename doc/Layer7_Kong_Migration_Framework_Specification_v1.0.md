@@ -150,7 +150,7 @@ uv run pytest tests/          # Run unit tests
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                LAYER 7 → KONG MIGRATION FRAMEWORK                          │
+│                LAYER 7 → KONG MIGRATION FRAMEWORK                           │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  ┌──────────────────┐    ┌──────────────────┐    ┌──────────────────────┐   │
@@ -158,7 +158,7 @@ uv run pytest tests/          # Run unit tests
 │  │     MODULE       │    │     ENGINE        │    │        [✓]          │   │
 │  │      [✓]         │    │      [✓]          │    │                     │   │
 │  │ • RESTMAN XML    │    │ • 3-Tier Classify │    │ • Weighted scoring  │   │
-│  │ • Graphman JSON  │    │ • 35 DIRECT       │    │ • 20 pattern files   │   │
+│  │ • Graphman JSON  │    │ • 35 DIRECT       │    │ • 20 pattern files  │   │
 │  │ • GMU Directory  │    │ • 109 CONDITIONAL │    │ • AI-learned cache  │   │
 │  │ • Standalone XML │    │ • 129 CUSTOM      │    │ • 2 ref catalogs    │   │
 │  └──────────────────┘    └──────────────────┘    └──────────────────────┘   │
@@ -166,30 +166,30 @@ uv run pytest tests/          # Run unit tests
 │         ▼                        ▼                        ▼                 │
 │  ┌──────────────────────────────────────────────────────────────────────┐   │
 │  │                KNOWLEDGE REFERENCE LIBRARY                           │   │
-│  │  Assertion Mappings [✓] | Patterns [✓] | AI Cache [✓] | OTK [✓]    │   │
+│  │  Assertion Mappings [✓] | Patterns [✓] | AI Cache [✓] | OTK [✓]      │   │
 │  └──────────────────────────────────────────────────────────────────────┘   │
 │                              │                                              │
 │         ┌────────────────────┼────────────────────┐                         │
-│         ▼                    ▼                    ▼                          │
-│  ┌───────────────┐  ┌───────────────────┐  ┌──────────────────┐            │
-│  │  GENERATION   │  │  VAULT & SECRETS  │  │   AI ANALYSIS    │            │
-│  │    ENGINE     │  │     MAPPER        │  │   ORCHESTRATOR   │            │
-│  │     [✓]       │  │      [✓]          │  │      [✓]         │            │
-│  │ • Kong YAML   │  │ • Cluster Props   │  │ • Pattern Match  │            │
-│  │ • 23 plugin   │  │ • Stored Passwords│  │ • Cache Check    │            │
-│  │   generators  │  │ • Certificates    │  │ • Claude API     │            │
-│  │ • Vault refs  │  │ • JDBC Creds      │  │ • Pattern Learn  │            │
-│  └───────┬───────┘  │ • JWT Keys        │  └──────────────────┘            │
+│         ▼                    ▼                    ▼                         │
+│  ┌───────────────┐  ┌───────────────────┐  ┌──────────────────┐             │
+│  │  GENERATION   │  │  VAULT & SECRETS  │  │   AI ANALYSIS    │             │
+│  │    ENGINE     │  │     MAPPER        │  │   ORCHESTRATOR   │             │
+│  │     [✓]       │  │      [✓]          │  │      [✓]         │             │
+│  │ • Kong YAML   │  │ • Cluster Props   │  │ • Pattern Match  │             │
+│  │ • 23 plugin   │  │ • Stored Passwords│  │ • Cache Check    │             │
+│  │   generators  │  │ • Certificates    │  │ • Claude API     │             │
+│  │ • Vault refs  │  │ • JDBC Creds      │  │ • Pattern Learn  │             │
+│  └───────┬───────┘  │ • JWT Keys        │  └──────────────────┘             │
 │          │          └───────────────────┘                                   │
 │          ▼                                                                  │
 │  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │                    REPORTING LAYER [✓]                                │   │
+│  │                    REPORTING LAYER [✓]                               │   │
 │  │   HTML Report | Talking Points | Vault Reference Map | Env Template  │   │
 │  └──────────────────────────────────────────────────────────────────────┘   │
 │                                                                             │
 │  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │               VALIDATION ENVIRONMENT [✓]                              │   │
-│  │   Kong 3.14 Docker | Node Mock API | 58 Unit Tests                    │   │
+│  │               VALIDATION ENVIRONMENT [✓]                             │   │
+│  │   Kong 3.14 Docker | Node Mock API | 58 Unit Tests                   │   │
 │  └──────────────────────────────────────────────────────────────────────┘   │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -438,19 +438,19 @@ uv run migrate analyze /path/to/otk-customizations-single.json
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    CUSTOMER NETWORK                              │
-│                                                                  │
+│                    CUSTOMER NETWORK                             │
+│                                                                 │
 │  ┌──────────────┐    ┌──────────────┐    ┌──────────────────┐   │
 │  │  Layer 7     │    │   Migration  │    │   Generated      │   │
 │  │  Exports     │───▶│   Framework  │───▶│   Kong Configs   │   │
 │  │  (Source)    │    │   (Local)    │    │   (Output)       │   │
-│  │              │    │              │    │   + Vault Config  │   │
+│  │              │    │              │    │   + Vault Config │   │
 │  └──────────────┘    └──────┬───────┘    └──────────────────┘   │
-│                             │                                    │
-│                             │ Structured Prompts Only            │
-│                             │ (Secrets sanitized before sending) │
-│                             ▼                                    │
-└─────────────────────────────┼────────────────────────────────────┘
+│                             │                                   │
+│                             │ Structured Prompts Only           │
+│                             │ (Secrets sanitized before sending)│
+│                             ▼                                   │
+└─────────────────────────────┼───────────────────────────────────┘
                               │
                               ▼
                ┌──────────────────────────┐
@@ -674,15 +674,15 @@ The Validation Environment provides runtime verification that generated Kong Ent
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                     VALIDATION ENVIRONMENT                              │
 │                                                                         │
-│  ┌──────────────┐   :8000   ┌──────────────────┐   :8080  ┌──────────┐ │
+│  ┌──────────────┐   :8000   ┌──────────────────┐   :8080  ┌──────────┐  │
 │  │    Test      │──────────▶│  Kong Gateway     │─────────▶│ Mock API │ │
 │  │   Runner     │           │   (DB-less)       │          │ (Node)   │ │
 │  │   (pytest)   │           └────────┬──────────┘          └──────────┘ │
 │  └──────────────┘                    │ :8001                            │
-│                            ┌─────────┴────────┐                        │
-│                            │   Admin API      │                        │
-│                            │  (Health + Info) │                        │
-│                            └──────────────────┘                        │
+│                            ┌─────────┴────────┐                         │
+│                            │   Admin API      │                         │
+│                            │  (Health + Info) │                         │
+│                            └──────────────────┘                         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -1468,22 +1468,22 @@ Layer 7 stores configuration, secrets, and certificates as gateway-wide entities
 ```
 ┌─────────────────────────────┐       ┌────────────────────────────────┐
 │      LAYER 7 GATEWAY        │       │      KONG GATEWAY              │
-│                              │       │                                │
-│  Cluster Properties ─────────┼──────▶│  Kong Vaults                   │
-│  (key=value pairs)           │       │  {vault://layer7-migrated/KEY} │
-│                              │       │                                │
-│  Stored Passwords ───────────┼──────▶│  Kong Vaults (secrets)         │
-│  (encrypted secrets)         │       │  {vault://layer7-migrated/KEY} │
-│                              │       │                                │
-│  Trusted Certificates ───────┼──────▶│  Kong Certificates / CA Certs  │
-│  (TLS/mTLS certs)            │       │  + SNI mapping                 │
-│                              │       │                                │
-│  JWT Keys (in assertions) ───┼──────▶│  Kong Keys / Key Sets          │
-│  (signing/validation keys)   │       │  (JWK format)                  │
-│                              │       │                                │
-│  JDBC Connections ───────────┼──────▶│  Kong Vaults (credentials)     │
-│  (URL, user, password)       │       │  + backend service config      │
-│                              │       │                                │
+│                             │       │                                │
+│  Cluster Properties ────────┼──────▶│  Kong Vaults                   │
+│  (key=value pairs)          │       │  {vault://layer7-migrated/KEY} │
+│                             │       │                                │
+│  Stored Passwords ──────────┼──────▶│  Kong Vaults (secrets)         │
+│  (encrypted secrets)        │       │  {vault://layer7-migrated/KEY} │
+│                             │       │                                │
+│  Trusted Certificates ──────┼──────▶│  Kong Certificates / CA Certs  │
+│  (TLS/mTLS certs)           │       │  + SNI mapping                 │
+│                             │       │                                │
+│  JWT Keys (in assertions) ──┼──────▶│  Kong Keys / Key Sets          │
+│  (signing/validation keys)  │       │  (JWK format)                  │
+│                             │       │                                │
+│  JDBC Connections ──────────┼──────▶│  Kong Vaults (credentials)     │
+│  (URL, user, password)      │       │  + backend service config      │
+│                             │       │                                │
 └─────────────────────────────┘       └────────────────────────────────┘
 ```
 
@@ -1619,36 +1619,36 @@ The file `knowledge/mappings/assertion-to-plugin.yaml` provides supplemental map
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│                    AI ANALYSIS PIPELINE                         │
-│                                                                 │
-│  CUSTOM/CONDITIONAL                                             │
-│  Assertion                                                      │
-│       │                                                         │
-│       ▼                                                         │
-│  ┌──────────────┐  hit   ┌──────────────┐                      │
-│  │   Pattern     │──────▶│   Return     │                      │
-│  │   Matcher     │       │   Match      │                      │
-│  └──────┬───────┘       └──────────────┘                      │
-│         │ miss                                                  │
-│         ▼                                                       │
-│  ┌──────────────┐  hit   ┌──────────────┐                      │
-│  │   Cache       │──────▶│   Return     │                      │
-│  │   Check       │       │   Cached     │                      │
-│  └──────┬───────┘       └──────────────┘                      │
-│         │ miss                                                  │
-│         ▼                                                       │
-│  ┌──────────────┐        ┌──────────────┐                      │
-│  │   Claude API  │──────▶│   Cache      │                      │
-│  │   Call        │       │   Store      │                      │
-│  └──────┬───────┘       └──────┬───────┘                      │
-│         │                       │                               │
-│         ▼                       ▼                               │
-│  ┌──────────────┐        ┌──────────────┐                      │
-│  │   Apply       │       │   Pattern    │                      │
-│  │   Confidence  │       │   Learning   │                      │
-│  │   Flags       │       │   (≥85%)     │                      │
-│  └──────────────┘       └──────────────┘                      │
-│                                                                 │
+│                    AI ANALYSIS PIPELINE                        │
+│                                                                │
+│  CUSTOM/CONDITIONAL                                            │
+│  Assertion                                                     │
+│       │                                                        │
+│       ▼                                                        │
+│  ┌──────────────┐  hit  ┌──────────────┐                       │
+│  │   Pattern    │──────▶│   Return     │                       │
+│  │   Matcher    │       │   Match      │                       │
+│  └──────┬───────┘       └──────────────┘                       │
+│         │ miss                                                 │
+│         ▼                                                      │
+│  ┌──────────────┐  hit  ┌──────────────┐                       │
+│  │   Cache      │──────▶│   Return     │                       │
+│  │   Check      │       │   Cached     │                       │
+│  └──────┬───────┘       └──────────────┘                       │
+│         │ miss                                                 │
+│         ▼                                                      │
+│  ┌──────────────┐       ┌──────────────┐                       │
+│  │   Claude API │──────▶│   Cache      │                       │
+│  │   Call       │       │   Store      │                       │
+│  └──────┬───────┘       └──────┬───────┘                       │
+│         │                       │                              │
+│         ▼                       ▼                              │
+│  ┌──────────────┐       ┌──────────────┐                       │
+│  │   Apply      │       │   Pattern    │                       │
+│  │   Confidence │       │   Learning   │                       │
+│  │   Flags      │       │   (≥85%)     │                       │
+│  └──────────────┘       └──────────────┘                       │
+│                                                                │
 └────────────────────────────────────────────────────────────────┘
 ```
 
