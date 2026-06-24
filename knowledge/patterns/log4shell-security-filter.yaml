@@ -2,7 +2,7 @@ pattern:
   id: log4shell-security-filter
   name: "Log4Shell (CVE-2021-44228) Request Filter"
   description: "URL-decodes query string, concatenates with all headers and body, scans for ${  injection pattern to block Log4Shell exploits"
-  source: "Layer7-Community/Sample-Policies/log4shell"
+  source: "Layer 7 Gateway reference policies"
   layer7:
     assertion_types:
       - ComparisonAssertion
@@ -33,5 +33,5 @@ pattern:
       - "Consider using a WAF for production (Kong + ModSecurity, cloud WAF)"
       - "Scanning all headers + body + query may impact performance on large payloads"
   metadata:
-    contributor: layer7-community-sample-policies
+    contributor: kong-migration-kit
     confidence: 0.85

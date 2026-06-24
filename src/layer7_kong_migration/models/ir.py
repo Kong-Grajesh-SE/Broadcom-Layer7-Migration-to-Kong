@@ -73,7 +73,7 @@ ASSERTION_REVIEW_REASONS: dict[str, str] = {
     "KeyValueStore": "Key-value store maps to Kong shared dict or pre-function Lua with ngx.shared",
     "KeyValueLookup": "Key-value lookup maps to Kong shared dict or pre-function Lua with ngx.shared",
     "CustomizeErrorResponse": "Error response customization maps to exit-transformer plugin (Enterprise)",
-    # XML tag name aliases and new types from Layer7-Community/Sample-Policies
+    # XML tag name aliases and extended types
     "OversizedTextAssertion": "XML size limits map to xml-threat-protection plugin (Enterprise) - verify thresholds",
     "OversizedText": "XML size limits map to xml-threat-protection plugin (Enterprise) - verify thresholds",
     "JsonDocumentStructureAssertion": "JSON structure limits map to json-threat-protection plugin (Enterprise)",
@@ -136,7 +136,7 @@ ASSERTION_REVIEW_REASONS: dict[str, str] = {
     "RequireWssSaml2": "WS-Security SAML 2.0 maps to openid-connect - requires SAML-to-OIDC migration",
     "SamlIssuer": "SAML issuer maps to openid-connect token issuance (Enterprise)",
     "SetSamlStatus": "SAML status setting maps to pre-function for OIDC error response shaping",
-    # Community custom assertions
+    # Extended custom assertions
     "EvaluateMathExpressionAssertion": "Math expression evaluation maps to pre-function Lua math library",
     "DelayAssertion": "Delay/sleep maps to pre-function Lua ngx.sleep() - dev/test only",
     "InjectionFilterAssertion": "Injection filter maps to pre-function Lua regex patterns or WAF integration",

@@ -1789,7 +1789,7 @@ bin/validation-down.sh                     # Stop environment
 
 ### 17.5 Layer 7 Assertion Type Reference (Complete)
 
-The framework recognizes **273 assertion types** across 3 classification tiers (35 DIRECT, 109 CONDITIONAL, 129 CUSTOM), covering the complete Graphman v11.2.1 schema catalog of 247 types plus 26 XML tag name aliases and community-discovered types. Source: Layer7-Community/graphman-client assertion schemas + Sample-Policies + Assertions + Integrations + aigw repos.
+The framework recognizes **273 assertion types** across 3 classification tiers (35 DIRECT, 109 CONDITIONAL, 129 CUSTOM), covering the complete Graphman v11.2.1 schema catalog of 247 types plus 26 XML tag name aliases and extended types derived from Layer 7 reference implementations and custom assertion SDK.
 
 Known assertion types discovered in the OTK bundle not yet explicitly classified (handled as CUSTOM):
 - `IdentityAttributes` - Identity context attributes (note: `CertificateAttributes` now classified as CONDITIONAL → mtls-auth)

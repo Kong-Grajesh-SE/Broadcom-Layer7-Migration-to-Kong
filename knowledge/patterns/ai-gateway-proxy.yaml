@@ -2,7 +2,7 @@ pattern:
   id: ai-gateway-proxy
   name: "AI Gateway LLM Proxy with Model Restriction and Token Cost Tracking"
   description: "Layer 7 as AI Gateway proxy for LLMs: restricts models via JavaScript rewrite, enforces per-user/per-agent quotas, tracks token costs from response eval_count"
-  source: "Layer7-Community/aigw"
+  source: "Layer 7 AI Gateway reference"
   layer7:
     assertion_types:
       - JavaScript  # model restriction rewrite, token cost parsing
@@ -57,5 +57,5 @@ pattern:
       - "Prompt interject pattern (fake LLM response on error): use exit-transformer or ai-response-transformer"
       - "Layer 7 returns role:'apisecurity' on quota breach; configure Kong error response format to match LLM API schema"
   metadata:
-    contributor: layer7-community-aigw
+    contributor: kong-migration-kit
     confidence: 0.85

@@ -2,7 +2,7 @@ pattern:
   id: opa-integration
   name: "OPA (Open Policy Agent) Authorization Integration"
   description: "Layer 7 calls OPA via HTTP for JWT validation and RBAC decisions. Two variants: V1 (Gateway validates JWT, then OPA checks RBAC) and V2 (OPA validates JWT itself)"
-  source: "Layer7-Community/Integrations/gateway-opa-example"
+  source: "Layer 7 Gateway reference implementation"
   layer7:
     assertion_types:
       - DecodeJsonWebToken
@@ -48,5 +48,5 @@ pattern:
       - "Migrate Rego policies from Layer 7 OPA config to Kong OPA plugin"
       - "Layer 7 builds OPA input from context variables; Kong OPA plugin auto-populates from request context"
   metadata:
-    contributor: layer7-community-integrations
+    contributor: kong-migration-kit
     confidence: 0.90

@@ -2,7 +2,7 @@ pattern:
   id: json-schema-validation
   name: "JSON Schema (Draft v4) Validation"
   description: "Validates request body against publisher-supplied inline JSON Schema Draft v4"
-  source: "Layer7-Community/Sample-Policies/Portal-Templates/RequestValidation/ValidateJSONSchema"
+  source: "Layer 7 Gateway reference policies"
   layer7:
     assertion_types:
       - JSONSchemaAssertion
@@ -34,5 +34,5 @@ pattern:
       - "Copy inline schema content directly to body_schema config field"
       - "Map jsonschema.failure to verbose_response for detailed error messages"
   metadata:
-    contributor: layer7-community-sample-policies
+    contributor: kong-migration-kit
     confidence: 0.90

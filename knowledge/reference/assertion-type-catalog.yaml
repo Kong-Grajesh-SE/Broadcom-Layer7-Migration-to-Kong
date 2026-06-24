@@ -1,8 +1,8 @@
 reference:
   id: assertion-type-catalog
   name: "Complete Layer 7 Assertion Type Catalog (247 types from Graphman v11.2.1)"
-  description: "Authoritative list of all Layer 7 assertion types with their categories and Kong migration tier. Source: graphman-client schema + community repos."
-  source: "Layer7-Community/graphman-client/schema/v11.2.1/assertions/"
+  description: "Authoritative list of all Layer 7 assertion types with their categories and Kong migration tier."
+  source: "Graphman Client schema v11.2.1 + Layer 7 reference implementations"
 
   categories:
     structural:
@@ -314,4 +314,4 @@ reference:
     direct: 35
     conditional: 109
     custom: 129
-    coverage: "Framework classifies all 247 Graphman schema types plus 26 XML tag aliases and community types"
+    coverage: "Framework classifies all 247 Graphman schema types plus 26 XML tag aliases and extended types"

@@ -2,7 +2,7 @@ pattern:
   id: jwt-validation-claims
   name: "JWT Validation with Claim Checks"
   description: "Validates JWT Bearer token signature with gateway keys, then checks iss, aud, and scope claims via JSONPath"
-  source: "Layer7-Community/Sample-Policies/Portal-Templates/Authentication/JWTValidation"
+  source: "Layer 7 Gateway reference policies"
   layer7:
     assertion_types:
       - Regex
@@ -36,5 +36,5 @@ pattern:
       - "Issuer/audience claim validation may need post-function Lua or openid-connect plugin"
       - "Scope validation typically handled by openid-connect plugin scopes_required config"
   metadata:
-    contributor: layer7-community-sample-policies
+    contributor: kong-migration-kit
     confidence: 0.80

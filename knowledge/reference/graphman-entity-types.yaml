@@ -2,7 +2,7 @@ reference:
   id: graphman-entity-types
   name: "Graphman Entity Type Catalog (v11.2.1)"
   description: "Complete list of 47 active + 11 deprecated Graphman entity types. Maps Layer 7 bundle entity types to Kong declarative YAML equivalents."
-  source: "Layer7-Community/graphman-client/schema/v11.2.1"
+  source: "Graphman Client schema v11.2.1"
 
   entity_types:
     # === CORE GATEWAY ENTITIES ===

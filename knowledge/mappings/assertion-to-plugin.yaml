@@ -263,7 +263,7 @@ mappings:
     notes: "Kong 3.14: Key-value lookup via pre-function Lua with ngx.shared dict"
 
   # ============================================================
-  # XML TAG NAME ALIASES (from Layer7-Community/Sample-Policies)
+  # XML TAG NAME ALIASES
   # Real L7p: XML tags often differ from assertion type names
   # ============================================================
 
@@ -316,7 +316,7 @@ mappings:
     notes: "XSS protection - HTML entity/script tag detection in pre-function Lua"
 
   # ============================================================
-  # CUSTOM MAPPINGS - NEW TYPES (from Layer7-Community/Sample-Policies)
+  # CUSTOM MAPPINGS - EXTENDED TYPES
   # ============================================================
 
   - assertion_type: Email

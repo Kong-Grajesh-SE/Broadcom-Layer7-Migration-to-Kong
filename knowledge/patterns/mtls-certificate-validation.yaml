@@ -2,7 +2,7 @@ pattern:
   id: mtls-certificate-validation
   name: "mTLS Client Certificate Validation with JWKS Thumbprint Matching"
   description: "Requires TLS client cert, extracts SHA-256 thumbprint, matches against certificates stored in API key JWKS metadata via ForEachLoop"
-  source: "Layer7-Community/Sample-Policies/Portal-Templates/Authentication/mTLSValidation"
+  source: "Layer 7 Gateway reference policies"
   layer7:
     assertion_types:
       - SslAssertion  # RequireClientAuthentication=true
@@ -43,5 +43,5 @@ pattern:
       - "May need both key-auth + mtls-auth plugins for the dual-factor pattern"
       - "Consumer mapping: Layer 7 API key record → Kong consumer with credentials"
   metadata:
-    contributor: layer7-community-sample-policies
+    contributor: kong-migration-kit
     confidence: 0.75

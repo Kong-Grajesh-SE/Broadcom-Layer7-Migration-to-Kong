@@ -2,7 +2,7 @@ pattern:
   id: otk-fapi-compliance
   name: "OTK FAPI Baseline/Advanced Compliance Profile"
   description: "FAPI compliance extensions combining mTLS, PAR, JARM, interaction-id headers, PS256 signing, and custom id_token claims"
-  source: "Layer7-Community/otk-customizations-single"
+  source: "Layer 7 OTK customization reference"
   layer7:
     assertion_types:
       - SslAssertion  # RequireClientAuthentication for mTLS
@@ -62,5 +62,5 @@ pattern:
       - "x-fapi-interaction-id: use request-transformer to auto-generate from Kong request_id"
       - "65+ OTK cluster properties define token lifetimes, algorithms, and feature flags - extract and map to OIDC provider config"
   metadata:
-    contributor: layer7-community-otk-customizations
+    contributor: kong-migration-kit
     confidence: 0.75

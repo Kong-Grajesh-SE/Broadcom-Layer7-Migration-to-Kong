@@ -1,8 +1,8 @@
 pattern:
-  id: custom-assertions-community
-  name: "Community Custom Assertions Migration Guide"
-  description: "Migration guidance for 4 custom Java assertions from the Layer7 community: SSH Command, Math Expression, Delay, and Injection Filter"
-  source: "Layer7-Community/Assertions"
+  id: custom-assertions-extended
+  name: "Extended Custom Assertions Migration Guide"
+  description: "Migration guidance for 4 custom Java assertions: SSH Command, Math Expression, Delay, and Injection Filter"
+  source: "Layer 7 Gateway custom assertion SDK"
   layer7:
     assertion_types:
       - SshCommandAssertion
@@ -74,5 +74,5 @@ pattern:
       - "InjectionFilterAssertion's deep content inspection (XML nodes, JSON keys, MIME parts) needs custom plugin or WAF"
       - "L7 CustomAssertion pattern (config class + ServiceInvocation) maps to Kong plugin (schema.lua + handler.lua)"
   metadata:
-    contributor: layer7-community-assertions
+    contributor: kong-migration-kit
     confidence: 0.80

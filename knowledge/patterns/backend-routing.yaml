@@ -2,7 +2,7 @@ pattern:
   id: backend-routing
   name: "Backend HTTP Routing with Path Stripping"
   description: "Routes request to backend API by constructing URL from apiLocation + stripped URI path + query string, with full header/param forwarding"
-  source: "Layer7-Community/Sample-Policies/Portal-Templates/Routing/RouteRequest"
+  source: "Layer 7 Gateway reference policies"
   layer7:
     assertion_types:
       - SetVariable
@@ -40,5 +40,5 @@ pattern:
       - "Header forwarding is Kong default behavior (no plugin needed)"
       - "502 on routing failure is Kong built-in behavior"
   metadata:
-    contributor: layer7-community-sample-policies
+    contributor: kong-migration-kit
     confidence: 0.95

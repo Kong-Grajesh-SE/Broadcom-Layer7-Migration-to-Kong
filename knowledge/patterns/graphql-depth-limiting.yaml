@@ -2,7 +2,7 @@ pattern:
   id: graphql-depth-limiting
   name: "GraphQL Query Depth Limiting with Stack Trace Redaction"
   description: "Validates GraphQL query nesting depth via JavaScript brace counting, routes to backend, redacts stacktrace from error responses"
-  source: "Layer7-Community/Sample-Policies/graphqlToday"
+  source: "Layer 7 Gateway reference policies"
   layer7:
     assertion_types:
       - EvaluateJsonPathExpressionV2  # extract $.query
@@ -35,5 +35,5 @@ pattern:
       - "Stack trace redaction can be done via response-transformer or post-function plugin"
       - "Introspection bypass can be handled by separate route with different plugin config"
   metadata:
-    contributor: layer7-community-sample-policies
+    contributor: kong-migration-kit
     confidence: 0.75

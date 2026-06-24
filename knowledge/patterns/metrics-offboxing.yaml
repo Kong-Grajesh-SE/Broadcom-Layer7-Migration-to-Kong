@@ -2,7 +2,7 @@ pattern:
   id: metrics-offboxing
   name: "Metrics Off-Boxing to InfluxDB/Grafana via Gateway Policy"
   description: "Extracts JSON metrics via 12+ JsonPath expressions, transforms into InfluxDB line protocol, POSTs to InfluxDB via HttpRoutingAssertion"
-  source: "Layer7-Community/Integrations/gateway-metrics-grafana-example"
+  source: "Layer 7 Gateway reference implementation"
   layer7:
     assertion_types:
       - EvaluateJsonPathExpression  # x12 extracts for metric fields
@@ -43,5 +43,5 @@ pattern:
       - "L7 policy-based metric extraction is replaced by Kong's built-in request/response metrics"
       - "Custom metrics beyond standard latency/status: use pre-function to push to ngx.shared dict + custom Prometheus collector"
   metadata:
-    contributor: layer7-community-integrations
+    contributor: kong-migration-kit
     confidence: 0.90

@@ -169,7 +169,7 @@ CONDITIONAL_ASSERTIONS: dict[str, tuple[str, ReviewFlag]] = {
     "RequireWssSaml2": ("openid-connect", ReviewFlag.IDP_CONFIG_REQUIRED),
     "SamlIssuer": ("openid-connect", ReviewFlag.IDP_CONFIG_REQUIRED),
     "SetSamlStatus": ("pre-function", ReviewFlag.IDP_CONFIG_REQUIRED),
-    # --- Community custom assertions (Layer7-Community/Assertions) ---
+    # --- Extended custom assertions ---
     "EvaluateMathExpressionAssertion": ("pre-function", ReviewFlag.LUA_MIGRATION_REQUIRED),
     "DelayAssertion": ("pre-function", ReviewFlag.LUA_MIGRATION_REQUIRED),
     "InjectionFilterAssertion": ("pre-function", ReviewFlag.SECURITY_REVIEW),
@@ -319,7 +319,7 @@ CUSTOM_ASSERTIONS: set[str] = {
     "UDDINotification",
     "FtpCredential",
     "SshCredential",
-    # --- Discovered from Layer7-Community repos ---
+    # --- Extended types ---
     "Email",
     "RESTGatewayManagement",
     "SshCommandAssertion",

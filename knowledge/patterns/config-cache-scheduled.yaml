@@ -2,7 +2,7 @@ pattern:
   id: config-cache-scheduled
   name: "Scheduled Configuration Cache with External Config Service"
   description: "Scheduled task fetches config XML from external service, XPath-extracts parameters, stores in named caches. Runtime policy serves cached values with cache-miss error handling."
-  source: "Layer7-Community/Demos/Configuration-Cache-Demo"
+  source: "Layer 7 Gateway reference implementation"
   layer7:
     assertion_types:
       - HttpRoutingAssertion  # fetch config from external service
@@ -56,5 +56,5 @@ pattern:
       - "L7 httprouting.reasonCode error codes → Kong upstream health checks + post-function error handling"
       - "GMU bundle entity types: FOLDER, POLICY, SERVICE, ENCAPSULATED_ASSERTION, SCHEDULED_TASK"
   metadata:
-    contributor: layer7-community-demos
+    contributor: kong-migration-kit
     confidence: 0.70

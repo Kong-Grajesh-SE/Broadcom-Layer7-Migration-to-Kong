@@ -2,7 +2,7 @@ pattern:
   id: oauth2-token-validation
   name: "OAuth 2.0 Token Validation with App Authorization"
   description: "Two-phase OAuth validation: (1) validate token and scopes via Portal OAuth verifier, (2) look up API key by client_id to authorize the application"
-  source: "Layer7-Community/Sample-Policies/Portal-Templates/Authentication/OAuth2Validation"
+  source: "Layer 7 Gateway reference policies"
   layer7:
     assertion_types:
       - SetVariable
@@ -42,5 +42,5 @@ pattern:
       - "Consumer mapping via client_id replaces Portal API Key Look Up"
       - "Account plan / org-level rate limiting needs consumer groups"
   metadata:
-    contributor: layer7-community-sample-policies
+    contributor: kong-migration-kit
     confidence: 0.80

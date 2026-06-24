@@ -2,7 +2,7 @@ pattern:
   id: xml-schema-validation
   name: "XML Schema (XSD) Validation"
   description: "Validates request body against publisher-supplied inline XSD schema"
-  source: "Layer7-Community/Sample-Policies/Portal-Templates/RequestValidation/ValidateXMLSchema"
+  source: "Layer 7 Gateway reference policies"
   layer7:
     assertion_types:
       - SchemaValidation
@@ -32,5 +32,5 @@ pattern:
       - "For SOAP/XML APIs, may need custom Lua plugin with xml2lua or external validator"
       - "Alternatively, modernize API to JSON and use request-validator plugin"
   metadata:
-    contributor: layer7-community-sample-policies
+    contributor: kong-migration-kit
     confidence: 0.50
