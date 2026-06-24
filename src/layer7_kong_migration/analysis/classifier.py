@@ -20,6 +20,7 @@ DIRECT_ASSERTIONS: dict[str, str] = {
     "DistributedRateLimit": "rate-limiting-advanced",
     "RequestSizeLimit": "request-size-limiting",
     "RemoteIpRange": "ip-restriction",
+    "RemoteIpAddressRange": "ip-restriction",
     "HardcodedResponse": "request-termination",
     "EchoRoutingAssertion": "request-termination",
     "AuditDetailAssertion": "http-log",
@@ -66,6 +67,15 @@ CONDITIONAL_ASSERTIONS: dict[str, tuple[str, ReviewFlag]] = {
     "LookupTrustedCertificate": ("mtls-auth", ReviewFlag.SECURITY_REVIEW),
     "ValidateCertificate": ("mtls-auth", ReviewFlag.SECURITY_REVIEW),
     "CodeInjectionProtectionAssertion": ("bot-detection", ReviewFlag.SECURITY_REVIEW),
+    # --- XML tag name aliases (actual L7p: tag names from real policies) ---
+    "JSONSchemaAssertion": ("request-validator", ReviewFlag.TRANSFORM_REVIEW),
+    "OpenApi": ("request-validator", ReviewFlag.TRANSFORM_REVIEW),
+    "JwtEncode": ("jwt-signer", ReviewFlag.KEY_CONFIG_REQUIRED),
+    "SqlAttackProtectionAssertion": ("pre-function", ReviewFlag.SECURITY_REVIEW),
+    "JsonDocumentStructureAssertion": ("json-threat-protection", ReviewFlag.SECURITY_REVIEW),
+    "OversizedTextAssertion": ("xml-threat-protection", ReviewFlag.SECURITY_REVIEW),
+    "CertificateAttributes": ("mtls-auth", ReviewFlag.SECURITY_REVIEW),
+    "CrossSiteScriptingProtectionAssertion": ("pre-function", ReviewFlag.SECURITY_REVIEW),
     # --- Kong 3.14 Enterprise plugin promotions ---
     "DocumentStructureThreat": ("xml-threat-protection", ReviewFlag.SECURITY_REVIEW),
     "JsonDocumentStructureThreat": ("json-threat-protection", ReviewFlag.SECURITY_REVIEW),
@@ -125,6 +135,9 @@ CUSTOM_ASSERTIONS: set[str] = {
     "MqNativeRouting",
     "NonSoapDecryptElement",
     "ManipulateMultiValuedVariable",
+    # Discovered from Layer7-Community/Sample-Policies
+    "Email",
+    "RESTGatewayManagement",
 }
 
 

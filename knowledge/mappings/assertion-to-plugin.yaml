@@ -263,6 +263,75 @@ mappings:
     notes: "Kong 3.14: Key-value lookup via pre-function Lua with ngx.shared dict"
 
   # ============================================================
+  # XML TAG NAME ALIASES (from Layer7-Community/Sample-Policies)
+  # Real L7p: XML tags often differ from assertion type names
+  # ============================================================
+
+  - assertion_type: JSONSchemaAssertion
+    kong_plugin: request-validator
+    complexity: conditional
+    review_flag: transform_review
+    notes: "XML tag alias for JsonSchemaAssertion - same request-validator mapping"
+
+  - assertion_type: OpenApi
+    kong_plugin: request-validator
+    complexity: conditional
+    review_flag: transform_review
+    notes: "XML tag alias for OpenApiValidation - same request-validator mapping"
+
+  - assertion_type: JwtEncode
+    kong_plugin: jwt-signer
+    complexity: conditional
+    review_flag: key_config_required
+    notes: "XML tag alias for EncodeJsonWebToken - same jwt-signer mapping"
+
+  - assertion_type: SqlAttackProtectionAssertion
+    kong_plugin: pre-function
+    complexity: conditional
+    review_flag: security_review
+    notes: "XML tag alias for SqlAttackProtection - same pre-function Lua regex mapping"
+
+  - assertion_type: JsonDocumentStructureAssertion
+    kong_plugin: json-threat-protection
+    complexity: conditional
+    review_flag: security_review
+    notes: "XML tag alias for JsonDocumentStructureThreat - same json-threat-protection mapping"
+
+  - assertion_type: OversizedTextAssertion
+    kong_plugin: xml-threat-protection
+    complexity: conditional
+    review_flag: security_review
+    notes: "XML tag alias for DocumentStructureThreat - maps to xml-threat-protection for size limits"
+
+  - assertion_type: CertificateAttributes
+    kong_plugin: mtls-auth
+    complexity: conditional
+    review_flag: security_review
+    notes: "Client certificate attribute extraction - maps to mtls-auth (Enterprise)"
+
+  - assertion_type: CrossSiteScriptingProtectionAssertion
+    kong_plugin: pre-function
+    complexity: conditional
+    review_flag: security_review
+    notes: "XSS protection - HTML entity/script tag detection in pre-function Lua"
+
+  # ============================================================
+  # CUSTOM MAPPINGS - NEW TYPES (from Layer7-Community/Sample-Policies)
+  # ============================================================
+
+  - assertion_type: Email
+    kong_plugin: null
+    complexity: custom
+    review_flag: custom_plugin_required
+    notes: "SMTP email sending - move to backend service or external notification system"
+
+  - assertion_type: RESTGatewayManagement
+    kong_plugin: null
+    complexity: custom
+    review_flag: custom_plugin_required
+    notes: "Gateway self-management API calls - use Kong Admin API instead"
+
+  # ============================================================
   # PROTOCOL ROUTING (architectural redesign needed)
   # ============================================================
 

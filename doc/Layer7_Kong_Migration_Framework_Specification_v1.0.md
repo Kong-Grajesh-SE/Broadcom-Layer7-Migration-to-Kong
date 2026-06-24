@@ -51,7 +51,7 @@ The framework addresses migrations from Broadcom Layer 7 API Gateway (versions 9
 | Ingestion Success Rate | 100% of test corpus samples | 100% (all samples + OTK) |
 | Classification Accuracy | 95% match to expected complexity | Validated |
 | Unit Test Pass Rate | 100% | **58/58 tests passing** |
-| Assertion Types Classified | >100 | **104 types across 3 tiers** |
+| Assertion Types Classified | >100 | **115 types across 3 tiers** |
 | Assertion Extractors | >50 | **72 registered extractors** |
 | Vault Migration | Cluster props, secrets, certs, keys | Implemented |
 
@@ -158,9 +158,9 @@ uv run pytest tests/          # Run unit tests
 │  │     MODULE       │    │     ENGINE        │    │        [✓]          │   │
 │  │      [✓]         │    │      [✓]          │    │                     │   │
 │  │ • RESTMAN XML    │    │ • 3-Tier Classify │    │ • Weighted scoring  │   │
-│  │ • Graphman JSON  │    │ • 19 DIRECT       │    │ • 4 seed patterns   │   │
-│  │ • GMU Directory  │    │ • 47 CONDITIONAL  │    │ • AI-learned cache  │   │
-│  │ • Standalone XML │    │ • 38 CUSTOM       │    │                     │   │
+│  │ • Graphman JSON  │    │ • 20 DIRECT       │    │ • 4 seed patterns   │   │
+│  │ • GMU Directory  │    │ • 55 CONDITIONAL  │    │ • AI-learned cache  │   │
+│  │ • Standalone XML │    │ • 40 CUSTOM       │    │                     │   │
 │  └──────────────────┘    └──────────────────┘    └──────────────────────┘   │
 │         │                        │                        │                 │
 │         ▼                        ▼                        ▼                 │
@@ -477,7 +477,7 @@ layer7-kong-migration/
 │       │   ├── extractors.py         # 72 assertion-specific extractors
 │       │   └── graphman.py           # GraphmanParser (imploded, exploded, code-to-XML)
 │       ├── analysis/                   # Assertion classification, mapping
-│       │   ├── classifier.py          # 3-tier: 19 DIRECT, 47 CONDITIONAL, 38 CUSTOM
+│       │   ├── classifier.py          # 3-tier: 20 DIRECT, 55 CONDITIONAL, 40 CUSTOM
 │       │   └── mapper.py             # YAML mapping loader
 │       ├── generation/                 # Kong YAML + vault generation
 │       │   ├── kong.py               # KongGenerator (declarative YAML v3.0)
@@ -1671,9 +1671,9 @@ The AI prompt system includes per-assertion-type guidance via the `TYPE_HINTS` d
 
 | Metric | Target | Current |
 |--------|--------|---------|
-| Assertion Types Classified | >100 | **104** (19D + 31C + 54X) |
+| Assertion Types Classified | >100 | **115** (20D + 55C + 40X) |
 | Registered Extractors | >50 | **72** |
-| Plugin Generators | >10 | **13** |
+| Plugin Generators | >10 | **23** |
 | Seed Patterns | 4 | **4** |
 | Unit Tests | >50 | **58 passing** |
 | OTK Automation Rate | >80% | **83%** |
@@ -1789,10 +1789,10 @@ bin/validation-down.sh                     # Stop environment
 
 ### 17.5 Layer 7 Assertion Type Reference (Complete)
 
-The framework recognizes **104 assertion types** across 3 classification tiers plus an additional ~30 types that fall through to CUSTOM by default when encountered.
+The framework recognizes **115 assertion types** across 3 classification tiers (20 DIRECT, 55 CONDITIONAL, 40 CUSTOM) plus an additional ~30 types that fall through to CUSTOM by default when encountered. Includes 8 XML tag name aliases discovered from Layer7-Community/Sample-Policies and 10 Kong 3.14 Enterprise plugin promotions.
 
 Known assertion types discovered in the OTK bundle not yet explicitly classified (handled as CUSTOM):
-- `CertificateAttributes` - X.509 certificate attribute extraction
+- `IdentityAttributes` - Identity context attributes (note: `CertificateAttributes` now classified as CONDITIONAL → mtls-auth)
 - `IdentityAttributes` - Identity context attributes
 - `XpathCredentialSource` - XPath-based credential extraction
 - `assertionComment` - Policy comment (lowercase variant)

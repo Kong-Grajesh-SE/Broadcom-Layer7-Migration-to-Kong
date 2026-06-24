@@ -1,0 +1,46 @@
+pattern:
+  id: oauth2-token-validation
+  name: "OAuth 2.0 Token Validation with App Authorization"
+  description: "Two-phase OAuth validation: (1) validate token and scopes via Portal OAuth verifier, (2) look up API key by client_id to authorize the application"
+  source: "Layer7-Community/Sample-Policies/Portal-Templates/Authentication/OAuth2Validation"
+  layer7:
+    assertion_types:
+      - SetVariable
+      - Encapsulated  # Portal Require OAuth 2.0 Token, Portal API Key Look Up
+      - ComparisonAssertion
+      - ResponseXpathAssertion
+      - EvaluateJsonPathExpressionV2
+      - CustomizeErrorResponse
+      - FalseAssertion
+    config_keys:
+      - allowedScopes  # space-separated OAuth scopes
+      - session.client_id
+      - apiKeyRecord.found
+      - apiKeyRecord.status
+    flow: "init → validate_oauth_token(scopes) → extract_client_id → lookup_api_key(client_id) → validate_key_status → export"
+    keywords:
+      - oauth
+      - oauth2
+      - access token
+      - scope
+      - client_id
+  kong:
+    plugins:
+      - name: openid-connect
+        config:
+          issuer: "REPLACE-WITH-OIDC-ISSUER-URL"
+          auth_methods:
+            - bearer
+          scopes_required:
+            - "REPLACE-FROM-allowedScopes"
+          consumer_claim:
+            - client_id
+    requires_review: true
+    review_notes:
+      - "Kong Enterprise required for openid-connect plugin"
+      - "Map Layer 7 Portal OAuth server to OIDC-compatible token endpoint"
+      - "Consumer mapping via client_id replaces Portal API Key Look Up"
+      - "Account plan / org-level rate limiting needs consumer groups"
+  metadata:
+    contributor: layer7-community-sample-policies
+    confidence: 0.80

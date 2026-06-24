@@ -16,7 +16,7 @@ This framework automates 75-85% of that work by parsing Layer 7 exports, classif
 
 | Metric | Value |
 |--------|-------|
-| Assertion types recognized | **104** (19 auto-generate, 47 with review, 38 AI/manual) |
+| Assertion types recognized | **115** (20 auto-generate, 55 with review, 40 AI/manual) |
 | Assertion-specific extractors | **72** |
 | OTK bundle automation rate | **83%** (130 real OAuth/OIDC policies, 1596 assertions) |
 | Simple service automation | **100%** |
@@ -41,9 +41,9 @@ This framework automates 75-85% of that work by parsing Layer 7 exports, classif
               ┌──────────────────▼──────────────────┐
               │          CLASSIFICATION              │
               │                                      │
-              │  DIRECT (19)     → auto-generate     │
-              │  CONDITIONAL (47) → generate + review │
-              │  CUSTOM (38)     → AI analysis       │
+              │  DIRECT (20)     → auto-generate     │
+              │  CONDITIONAL (55) → generate + review │
+              │  CUSTOM (40)     → AI analysis       │
               └──────────┬───────────────┬───────────┘
                          │               │
               ┌──────────▼───┐   ┌───────▼──────────┐
@@ -139,7 +139,7 @@ uv run migrate pattern list
 ├── src/layer7_kong_migration/
 │   ├── cli.py                  # 7 CLI commands (analyze, generate, report, vaults, ...)
 │   ├── ingestion/              # XML/JSON parsing, 72 assertion extractors
-│   ├── analysis/               # Three-tier classification (104 assertion types)
+│   ├── analysis/               # Three-tier classification (115 assertion types)
 │   ├── generation/             # Kong YAML generator, 23 plugin generators, vault mapper
 │   ├── ai/                     # Claude API integration, caching, pattern learning
 │   ├── patterns/               # Weighted similarity matcher + YAML pattern library

@@ -1,0 +1,36 @@
+pattern:
+  id: xml-schema-validation
+  name: "XML Schema (XSD) Validation"
+  description: "Validates request body against publisher-supplied inline XSD schema"
+  source: "Layer7-Community/Sample-Policies/Portal-Templates/RequestValidation/ValidateXMLSchema"
+  layer7:
+    assertion_types:
+      - SchemaValidation
+      - ComparisonAssertion
+      - CustomizeErrorResponse
+    config_keys:
+      - schema  # inline XSD content
+      - schema.failure  # validation error message
+      - Target  # REQUEST
+      - ApplyToArguments  # false = validate entire message
+    flow: "validate_xsd(request_body, schema) → on_failure(400, schema.failure)"
+    keywords:
+      - xml schema
+      - xsd
+      - schema validation
+      - xml validation
+  kong:
+    plugins:
+      - name: pre-function
+        config:
+          access:
+            - "-- XSD validation requires custom Lua XML library or external service"
+    requires_review: true
+    review_notes:
+      - "Kong request-validator only supports JSON Schema, not XSD"
+      - "Consider converting XSD to JSON Schema if payload is JSON-convertible"
+      - "For SOAP/XML APIs, may need custom Lua plugin with xml2lua or external validator"
+      - "Alternatively, modernize API to JSON and use request-validator plugin"
+  metadata:
+    contributor: layer7-community-sample-policies
+    confidence: 0.50

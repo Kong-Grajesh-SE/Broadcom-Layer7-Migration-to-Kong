@@ -1,0 +1,61 @@
+pattern:
+  id: threat-protection-layered
+  name: "Layered Threat Protection"
+  description: "Multi-layer threat protection combining request size, SQL injection, XSS, code injection, and content-type-aware document structure validation (JSON/XML)"
+  source: "Layer7-Community/Sample-Policies/Portal-Templates/ThreatProtection"
+  layer7:
+    assertion_types:
+      - RequestSizeLimit
+      - SqlAttackProtectionAssertion
+      - CrossSiteScriptingProtectionAssertion
+      - CodeInjectionProtectionAssertion
+      - JsonDocumentStructureAssertion
+      - OversizedTextAssertion
+    config_keys:
+      - maxRequestSizeBytes
+      - protectionTypes  # MsSql, OraSql, MetaText
+      - includeUrlPath
+      - includeBody
+      - maxContainerDepth
+      - maxObjectEntryCount
+      - maxArrayElementCount
+      - maxKeyLength
+      - maxStringLength
+    flow: "size_check → sql_injection → xss → code_injection → content_type_branch(json→json_structure | xml→xml_structure)"
+    keywords:
+      - threat protection
+      - sql injection
+      - xss
+      - code injection
+      - document structure
+  kong:
+    plugins:
+      - name: request-size-limiting
+        config:
+          allowed_payload_size: 10
+          size_unit: megabytes
+      - name: pre-function
+        config:
+          access:
+            - "-- SQL injection + XSS + code injection pattern matching"
+      - name: json-threat-protection
+        config:
+          max_body_size: 1048576
+          max_depth: 20
+          max_object_entry_count: 500
+          max_array_element_count: 1000
+          max_string_value_length: 65536
+      - name: xml-threat-protection
+        config:
+          max_body_size: 1048576
+          max_depth: 32
+          max_attributes: 128
+          allow_dtd: false
+    requires_review: true
+    review_notes:
+      - "SQL/XSS/code injection rules require Lua regex patterns in pre-function"
+      - "JSON and XML structure limits need separate Kong Enterprise plugins"
+      - "Kong Enterprise required for json-threat-protection and xml-threat-protection"
+  metadata:
+    contributor: layer7-community-sample-policies
+    confidence: 0.85

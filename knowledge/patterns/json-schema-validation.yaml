@@ -1,0 +1,38 @@
+pattern:
+  id: json-schema-validation
+  name: "JSON Schema (Draft v4) Validation"
+  description: "Validates request body against publisher-supplied inline JSON Schema Draft v4"
+  source: "Layer7-Community/Sample-Policies/Portal-Templates/RequestValidation/ValidateJSONSchema"
+  layer7:
+    assertion_types:
+      - JSONSchemaAssertion
+      - ComparisonAssertion
+      - CustomizeErrorResponse
+    config_keys:
+      - schema  # inline JSON Schema content
+      - jsonschema.failure  # validation error message
+      - JsonSchemaVersion  # DRAFTV4
+      - Target  # REQUEST
+    flow: "validate_json_schema(request_body, schema) → on_failure(400, jsonschema.failure)"
+    keywords:
+      - json schema
+      - draft v4
+      - json validation
+      - request validation
+  kong:
+    plugins:
+      - name: request-validator
+        config:
+          body_schema: "REPLACE-WITH-JSON-SCHEMA-CONTENT"
+          allowed_content_types:
+            - "application/json"
+          verbose_response: true
+    requires_review: true
+    review_notes:
+      - "Kong Enterprise required for request-validator plugin"
+      - "Kong request-validator uses JSON Schema Draft 4 — compatible with Layer 7"
+      - "Copy inline schema content directly to body_schema config field"
+      - "Map jsonschema.failure to verbose_response for detailed error messages"
+  metadata:
+    contributor: layer7-community-sample-policies
+    confidence: 0.90

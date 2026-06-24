@@ -1,0 +1,47 @@
+pattern:
+  id: mtls-certificate-validation
+  name: "mTLS Client Certificate Validation with JWKS Thumbprint Matching"
+  description: "Requires TLS client cert, extracts SHA-256 thumbprint, matches against certificates stored in API key JWKS metadata via ForEachLoop"
+  source: "Layer7-Community/Sample-Policies/Portal-Templates/Authentication/mTLSValidation"
+  layer7:
+    assertion_types:
+      - SslAssertion  # RequireClientAuthentication=true
+      - CertificateAttributes
+      - EvaluateJsonPathExpressionV2
+      - ForEachLoop
+      - EncodeDecode  # Base64 decode x5c certificate
+      - ComparisonAssertion  # SHA-256 thumbprint match
+      - Encapsulated  # Portal API Key Look Up
+    config_keys:
+      - RequireClientAuthentication
+      - request.ssl.clientCertificate.thumbprintSHA256
+      - jwks.keys  # certificate chain from JWKS x5c
+    flow: "require_ssl → extract_api_key → lookup_key → require_client_cert → extract_thumbprint → foreach(jwks_keys: decode_x5c → extract_cert_attrs → compare_thumbprint) → validate"
+    keywords:
+      - mtls
+      - client certificate
+      - certificate thumbprint
+      - x5c
+      - jwks
+  kong:
+    plugins:
+      - name: mtls-auth
+        config:
+          ca_certificates:
+            - "REPLACE-WITH-CA-CERT-ID"
+          skip_consumer_lookup: false
+          revocation_check_mode: SKIP
+      - name: key-auth
+        config:
+          key_names:
+            - apikey
+    requires_review: true
+    review_notes:
+      - "Kong Enterprise required for mtls-auth plugin"
+      - "Layer 7 does thumbprint matching per-key; Kong does CA chain validation"
+      - "Import trusted CA certificates to Kong ca_certificates entities"
+      - "May need both key-auth + mtls-auth plugins for the dual-factor pattern"
+      - "Consumer mapping: Layer 7 API key record → Kong consumer with credentials"
+  metadata:
+    contributor: layer7-community-sample-policies
+    confidence: 0.75

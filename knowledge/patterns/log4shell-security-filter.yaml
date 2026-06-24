@@ -1,0 +1,37 @@
+pattern:
+  id: log4shell-security-filter
+  name: "Log4Shell (CVE-2021-44228) Request Filter"
+  description: "URL-decodes query string, concatenates with all headers and body, scans for ${  injection pattern to block Log4Shell exploits"
+  source: "Layer7-Community/Sample-Policies/log4shell"
+  layer7:
+    assertion_types:
+      - ComparisonAssertion
+      - EncodeDecode  # URL_DECODE
+      - SetVariable
+      - Regex  # \$\{ pattern match, ProceedIfPatternMatches=false
+    config_keys:
+      - TransformType  # URL_DECODE
+      - request.url.query
+      - request.http.allheadervalues
+      - request.mainpart
+    flow: "url_decode_query → concat(query + headers + body) → regex_scan(\\$\\{) → block_if_found"
+    keywords:
+      - log4shell
+      - injection
+      - security
+      - threat protection
+      - CVE-2021-44228
+  kong:
+    plugins:
+      - name: pre-function
+        config:
+          access:
+            - "local body = kong.request.get_raw_body() or ''\nlocal query = kong.request.get_raw_query() or ''\nlocal headers = ''\nfor k, v in pairs(kong.request.get_headers()) do\n  if type(v) == 'table' then v = table.concat(v, ',') end\n  headers = headers .. v\nend\nlocal combined = query .. headers .. body\nif combined:find('%${') then\n  return kong.response.exit(400, '{\"error\":\"Potential injection detected\"}')\nend"
+    requires_review: true
+    review_notes:
+      - "Pre-function Lua implementation of Log4Shell pattern detection"
+      - "Consider using a WAF for production (Kong + ModSecurity, cloud WAF)"
+      - "Scanning all headers + body + query may impact performance on large payloads"
+  metadata:
+    contributor: layer7-community-sample-policies
+    confidence: 0.85

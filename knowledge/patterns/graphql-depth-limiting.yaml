@@ -1,0 +1,39 @@
+pattern:
+  id: graphql-depth-limiting
+  name: "GraphQL Query Depth Limiting with Stack Trace Redaction"
+  description: "Validates GraphQL query nesting depth via JavaScript brace counting, routes to backend, redacts stacktrace from error responses"
+  source: "Layer7-Community/Sample-Policies/graphqlToday"
+  layer7:
+    assertion_types:
+      - EvaluateJsonPathExpressionV2  # extract $.query
+      - JavaScript  # count { } nesting depth
+      - ComparisonAssertion  # depth > 100 check
+      - HttpRoutingAssertion  # route to GraphQL backend
+      - EvaluateJsonPathExpression  # extract response errors
+      - CustomizeErrorResponse
+    config_keys:
+      - maxDepth  # 100
+      - query_field  # $.query from request body
+    flow: "extract_query → count_depth(js) → reject_if_too_deep → route_to_backend → redact_stacktrace(js)"
+    keywords:
+      - graphql
+      - depth limiting
+      - query complexity
+      - stack trace
+      - introspection
+  kong:
+    plugins:
+      - name: graphql-rate-limiting-advanced
+        config:
+          max_cost: 100
+          cost_strategy: default
+          strategy: local
+    requires_review: true
+    review_notes:
+      - "Kong Enterprise required for graphql-rate-limiting-advanced"
+      - "Kong uses cost-based limiting (not depth counting); configure max_cost and cost_strategy"
+      - "Stack trace redaction can be done via response-transformer or post-function plugin"
+      - "Introspection bypass can be handled by separate route with different plugin config"
+  metadata:
+    contributor: layer7-community-sample-policies
+    confidence: 0.75

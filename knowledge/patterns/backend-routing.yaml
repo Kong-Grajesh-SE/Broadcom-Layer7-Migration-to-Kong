@@ -1,0 +1,44 @@
+pattern:
+  id: backend-routing
+  name: "Backend HTTP Routing with Path Stripping"
+  description: "Routes request to backend API by constructing URL from apiLocation + stripped URI path + query string, with full header/param forwarding"
+  source: "Layer7-Community/Sample-Policies/Portal-Templates/Routing/RouteRequest"
+  layer7:
+    assertion_types:
+      - SetVariable
+      - Regex  # strip serviceUrl prefix from URI
+      - HttpRoutingAssertion
+      - CustomizeErrorResponse
+    config_keys:
+      - apiLocation  # backend base URL (protocol + host + port + base path)
+      - serviceUrl  # gateway-side path prefix to strip
+      - FailOnErrorStatus  # false = proxy backend errors as-is
+      - ForwardAll  # true for headers, params, response headers
+    flow: "strip_prefix(regex) → construct_url(apiLocation + stripped_uri + query) → route → on_failure(502)"
+    keywords:
+      - http routing
+      - backend routing
+      - path stripping
+      - reverse proxy
+  kong:
+    plugins: []
+    kong_config:
+      service:
+        url: "REPLACE-FROM-apiLocation"
+        connect_timeout: 60000
+        write_timeout: 60000
+        read_timeout: 60000
+      route:
+        paths:
+          - "/REPLACE-FROM-serviceUrl"
+        strip_path: true
+    requires_review: true
+    review_notes:
+      - "Maps directly to Kong service URL + route path stripping"
+      - "apiLocation = Kong service url field"
+      - "serviceUrl prefix stripping = Kong route strip_path: true"
+      - "Header forwarding is Kong default behavior (no plugin needed)"
+      - "502 on routing failure is Kong built-in behavior"
+  metadata:
+    contributor: layer7-community-sample-policies
+    confidence: 0.95

@@ -1,0 +1,45 @@
+pattern:
+  id: org-rate-quota
+  name: "Organization-Level Rate Limit and Quota"
+  description: "Enforces per-organization rate limits and quotas via Portal Account Plans, returns 503 on quota exceeded"
+  source: "Layer7-Community/Sample-Policies/Portal-Templates/RateQuota/OrgLevelRLQ"
+  layer7:
+    assertion_types:
+      - SetVariable
+      - Include  # Account Plans Fragment (system-generated policy)
+      - ComparisonAssertion
+      - CustomizeErrorResponse
+    config_keys:
+      - apiKeyRecord.key
+      - apiKeyRecord.plan
+      - apiKeyRecord.accountPlanMappingId
+      - apiAuthz  # true/false result from Account Plans Fragment
+      - apiAuthzDetails  # failure reason text
+    flow: "init(key, plan, mapping_id) → include_account_plans_fragment → branch(apiAuthz: pass | fail→503)"
+    keywords:
+      - rate limit
+      - quota
+      - account plan
+      - organization
+      - throttle
+  kong:
+    plugins:
+      - name: rate-limiting-advanced
+        config:
+          limit:
+            - 100  # REPLACE with actual plan limits
+          window_size:
+            - 60
+          strategy: redis
+          sync_rate: 10
+          namespace: "org-REPLACE"
+    requires_review: true
+    review_notes:
+      - "Kong Enterprise required for rate-limiting-advanced"
+      - "Layer 7 Account Plans = Kong consumer groups with per-group rate limiting"
+      - "Rate limit values are NOT in the template; extract from Portal Account Plans config"
+      - "Layer 7 returns 503 for quota exceeded; Kong defaults to 429; configure error_code: 503"
+      - "Organization-level scoping: map Layer 7 org → Kong consumer group"
+  metadata:
+    contributor: layer7-community-sample-policies
+    confidence: 0.80

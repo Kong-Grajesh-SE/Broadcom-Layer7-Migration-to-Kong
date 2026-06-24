@@ -73,6 +73,13 @@ ASSERTION_REVIEW_REASONS: dict[str, str] = {
     "KeyValueStore": "Key-value store maps to Kong shared dict or pre-function Lua with ngx.shared",
     "KeyValueLookup": "Key-value lookup maps to Kong shared dict or pre-function Lua with ngx.shared",
     "CustomizeErrorResponse": "Error response customization maps to exit-transformer plugin (Enterprise)",
+    # XML tag name aliases and new types from Layer7-Community/Sample-Policies
+    "OversizedTextAssertion": "XML size limits map to xml-threat-protection plugin (Enterprise) - verify thresholds",
+    "JsonDocumentStructureAssertion": "JSON structure limits map to json-threat-protection plugin (Enterprise)",
+    "CrossSiteScriptingProtectionAssertion": "XSS patterns can be implemented in pre-function Lua regex matching",
+    "CertificateAttributes": "Certificate attribute extraction maps to mtls-auth plugin context variables",
+    "Email": "SMTP email sending has no Kong equivalent - move to backend notification service",
+    "RESTGatewayManagement": "Internal gateway management API has no Kong equivalent - use Kong Admin API",
 }
 
 
