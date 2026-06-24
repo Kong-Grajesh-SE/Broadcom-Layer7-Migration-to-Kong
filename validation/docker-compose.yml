@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   kong:
-    image: kong/kong-gateway:3.9
+    image: kong/kong-gateway:3.14
     container_name: layer7-migration-kong
     environment:
       KONG_DATABASE: "off"

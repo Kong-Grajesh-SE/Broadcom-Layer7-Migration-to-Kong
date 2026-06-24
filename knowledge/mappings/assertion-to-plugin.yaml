@@ -157,10 +157,110 @@ mappings:
     notes: "Custom Java assertion - requires complete reimplementation"
 
   - assertion_type: SiteMinderAuthenticate
-    kong_plugin: null
-    complexity: custom
+    kong_plugin: openid-connect
+    complexity: conditional
     review_flag: idp_config_required
-    notes: "CA SSO has no direct Kong equivalent - requires OIDC migration strategy"
+    notes: "Kong 3.14: CA SSO maps to openid-connect (Enterprise) - migrate IdP to OIDC provider"
+
+  # ============================================================
+  # KONG 3.14 ENTERPRISE PLUGIN MAPPINGS (promoted from custom)
+  # ============================================================
+
+  - assertion_type: DocumentStructureThreat
+    kong_plugin: xml-threat-protection
+    complexity: conditional
+    review_flag: security_review
+    notes: "Kong 3.14: XML threat protection (Enterprise) - verify depth/size/entity limits"
+
+  - assertion_type: JsonDocumentStructureThreat
+    kong_plugin: json-threat-protection
+    complexity: conditional
+    review_flag: security_review
+    notes: "Kong 3.14: JSON threat protection (Enterprise) - verify depth/size/array limits"
+
+  - assertion_type: KafkaRoutingAssertion
+    kong_plugin: kafka-upstream
+    complexity: conditional
+    review_flag: routing_decision
+    notes: "Kong 3.14: kafka-upstream (Enterprise) - configure broker, topic, SASL/TLS auth"
+
+  - assertion_type: SchemaValidation
+    kong_plugin: request-validator
+    complexity: conditional
+    review_flag: transform_review
+    notes: "Kong 3.14: request-validator (Enterprise, JSON Schema Draft 4) - XSD schemas need conversion"
+
+  - assertion_type: GraphqlSchemaValidation
+    kong_plugin: graphql-rate-limiting-advanced
+    complexity: conditional
+    review_flag: transform_review
+    notes: "Kong 3.14: GraphQL rate-limiting-advanced (Enterprise) - cost-based query validation"
+
+  - assertion_type: SiteMinderAuthorize
+    kong_plugin: opa
+    complexity: conditional
+    review_flag: idp_config_required
+    notes: "Kong 3.14: OPA plugin (Enterprise) - rewrite SiteMinder authz rules as Rego policies"
+
+  - assertion_type: SiteMinderCheckProtected
+    kong_plugin: opa
+    complexity: conditional
+    review_flag: security_review
+    notes: "Kong 3.14: OPA plugin (Enterprise) - resource protection checks via Rego"
+
+  - assertion_type: ValidateNonSoapSamlToken
+    kong_plugin: openid-connect
+    complexity: conditional
+    review_flag: idp_config_required
+    notes: "Kong 3.14: SAML token validation maps to openid-connect (Enterprise) - OIDC migration"
+
+  - assertion_type: CreateSamlToken
+    kong_plugin: openid-connect
+    complexity: conditional
+    review_flag: idp_config_required
+    notes: "Kong 3.14: SAML assertion creation maps to openid-connect token issuance (Enterprise)"
+
+  - assertion_type: CustomizeErrorResponse
+    kong_plugin: exit-transformer
+    complexity: conditional
+    review_flag: transform_review
+    notes: "Kong 3.14: exit-transformer (Enterprise) - Lua functions for error response customization"
+
+  - assertion_type: SqlAttackProtection
+    kong_plugin: pre-function
+    complexity: conditional
+    review_flag: security_review
+    notes: "Kong 3.14: SQL injection patterns implemented in pre-function Lua regex matching"
+
+  - assertion_type: CsrfProtection
+    kong_plugin: pre-function
+    complexity: conditional
+    review_flag: security_review
+    notes: "Kong 3.14: CSRF token validation implemented in pre-function Lua"
+
+  - assertion_type: TimeRange
+    kong_plugin: pre-function
+    complexity: conditional
+    review_flag: lua_migration_required
+    notes: "Kong 3.14: Time-based access control in pre-function Lua (os.date/ngx.time)"
+
+  - assertion_type: EncodeDecode
+    kong_plugin: pre-function
+    complexity: conditional
+    review_flag: lua_migration_required
+    notes: "Kong 3.14: Encoding operations in pre-function Lua (ngx.encode_base64, etc.)"
+
+  - assertion_type: KeyValueStore
+    kong_plugin: pre-function
+    complexity: conditional
+    review_flag: lua_migration_required
+    notes: "Kong 3.14: Key-value store via pre-function Lua with ngx.shared dict"
+
+  - assertion_type: KeyValueLookup
+    kong_plugin: pre-function
+    complexity: conditional
+    review_flag: lua_migration_required
+    notes: "Kong 3.14: Key-value lookup via pre-function Lua with ngx.shared dict"
 
   # ============================================================
   # PROTOCOL ROUTING (architectural redesign needed)
@@ -177,9 +277,3 @@ mappings:
     complexity: custom
     review_flag: protocol_unsupported
     notes: "MQ Native - consider sidecar or message bridge pattern"
-
-  - assertion_type: KafkaRoutingAssertion
-    kong_plugin: null
-    complexity: custom
-    review_flag: protocol_unsupported
-    notes: "Kafka routing - consider Kong's event gateway or sidecar"

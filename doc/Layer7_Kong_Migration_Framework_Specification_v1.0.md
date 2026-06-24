@@ -137,7 +137,7 @@ uv run pytest tests/          # Run unit tests
 | Component | Minimum | Recommended |
 |-----------|---------|-------------|
 | Python | 3.10 | 3.12+ |
-| Kong Gateway Enterprise | 3.4 | 3.9+ |
+| Kong Gateway Enterprise | 3.4 | 3.14+ |
 | Docker | 24.0 | 25.0+ |
 | Docker Compose | 2.20 | 2.24+ |
 | Layer 7 Gateway | 9.x | 10.x / 11.x |
@@ -159,8 +159,8 @@ uv run pytest tests/          # Run unit tests
 │  │      [✓]         │    │      [✓]          │    │                     │   │
 │  │ • RESTMAN XML    │    │ • 3-Tier Classify │    │ • Weighted scoring  │   │
 │  │ • Graphman JSON  │    │ • 19 DIRECT       │    │ • 4 seed patterns   │   │
-│  │ • GMU Directory  │    │ • 31 CONDITIONAL  │    │ • AI-learned cache  │   │
-│  │ • Standalone XML │    │ • 54 CUSTOM       │    │                     │   │
+│  │ • GMU Directory  │    │ • 47 CONDITIONAL  │    │ • AI-learned cache  │   │
+│  │ • Standalone XML │    │ • 38 CUSTOM       │    │                     │   │
 │  └──────────────────┘    └──────────────────┘    └──────────────────────┘   │
 │         │                        │                        │                 │
 │         ▼                        ▼                        ▼                 │
@@ -189,7 +189,7 @@ uv run pytest tests/          # Run unit tests
 │                                                                             │
 │  ┌──────────────────────────────────────────────────────────────────────┐   │
 │  │               VALIDATION ENVIRONMENT [✓]                              │   │
-│  │   Kong 3.9 Docker | Node Mock API | 58 Unit Tests                    │   │
+│  │   Kong 3.14 Docker | Node Mock API | 58 Unit Tests                    │   │
 │  └──────────────────────────────────────────────────────────────────────┘   │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -246,8 +246,8 @@ uv run pytest tests/          # Run unit tests
 | Tier | Count | Confidence | Action |
 |------|-------|------------|--------|
 | DIRECT | 19 types | 1.0 | Auto-generate Kong plugin config |
-| CONDITIONAL | 31 types | 0.7 | Generate with review flags |
-| CUSTOM | 54 types | 0.0 | Requires AI analysis or manual implementation |
+| CONDITIONAL | 47 types | 0.7 | Generate with review flags |
+| CUSTOM | 38 types | 0.0 | Requires AI analysis or manual implementation |
 
 #### 3.2.3 Pattern Matcher
 
@@ -477,11 +477,11 @@ layer7-kong-migration/
 │       │   ├── extractors.py         # 72 assertion-specific extractors
 │       │   └── graphman.py           # GraphmanParser (imploded, exploded, code-to-XML)
 │       ├── analysis/                   # Assertion classification, mapping
-│       │   ├── classifier.py          # 3-tier: 19 DIRECT, 31 CONDITIONAL, 54 CUSTOM
+│       │   ├── classifier.py          # 3-tier: 19 DIRECT, 47 CONDITIONAL, 38 CUSTOM
 │       │   └── mapper.py             # YAML mapping loader
 │       ├── generation/                 # Kong YAML + vault generation
 │       │   ├── kong.py               # KongGenerator (declarative YAML v3.0)
-│       │   ├── plugins.py            # 13 plugin generators + AI integration
+│       │   ├── plugins.py            # 23 plugin generators + AI integration
 │       │   └── vaults.py             # VaultMapper (env, aws, hcv, gcp backends)
 │       ├── patterns/                   # Pattern matching engine
 │       │   ├── matcher.py            # Weighted similarity scoring
@@ -540,7 +540,7 @@ layer7-kong-migration/
 │       └── test_vaults.py            # 12 tests - vault/secrets mapping
 │
 ├── validation/                         # Kong Enterprise Docker environment
-│   ├── docker-compose.yml             # Kong 3.9 + Node mock API
+│   ├── docker-compose.yml             # Kong 3.14 + Node mock API
 │   ├── kong.yaml                      # Generated config for testing
 │   └── mock-api/
 │       └── server.js                  # Echo server (Node.js)
@@ -638,7 +638,7 @@ The OTK bundle is the highest-fidelity test - 130 real OAuth/OIDC customization 
 The Validation Environment provides runtime verification that generated Kong Enterprise configurations deploy and behave correctly.
 
 **Components:**
-- Kong Gateway 3.9 (Docker, DB-less declarative mode)
+- Kong Gateway 3.14 (Docker, DB-less declarative mode)
 - Mock API Service (Node.js echo server)
 - Shell scripts for lifecycle management
 
@@ -663,7 +663,7 @@ The Validation Environment provides runtime verification that generated Kong Ent
 ### 7.3 Shell Scripts
 
 ```bash
-bin/validation-up.sh      # Start Kong 3.9 + Node mock API, wait for health
+bin/validation-up.sh      # Start Kong 3.14 + Node mock API, wait for health
 bin/validation-reload.sh  # Copy kong.yaml and reload Kong config
 bin/validation-down.sh    # Stop environment
 ```
@@ -1727,7 +1727,7 @@ The AI prompt system includes per-assertion-type guidance via the `TYPE_HINTS` d
 | Pattern Matching | Weighted similarity scoring against learned assertion patterns |
 | RESTMAN | Layer 7 RESTful Management API for exporting bundles |
 | Review Flag | Marker indicating human review required in generated config |
-| Validation Environment | Docker-based Kong 3.9 + Node mock API for runtime testing |
+| Validation Environment | Docker-based Kong 3.14 + Node mock API for runtime testing |
 | Vault Reference | Kong secret resolution syntax: `{vault://prefix/key}` |
 
 ### 17.2 Quick Reference Commands
@@ -1758,7 +1758,7 @@ uv run migrate pattern search "rate limit"
 uv run pytest tests/ -v                   # 58 unit tests
 
 # Validation environment
-bin/validation-up.sh                       # Start Kong 3.9 + Node mock API
+bin/validation-up.sh                       # Start Kong 3.14 + Node mock API
 bin/validation-reload.sh kong.yaml         # Reload config
 bin/validation-down.sh                     # Stop environment
 ```

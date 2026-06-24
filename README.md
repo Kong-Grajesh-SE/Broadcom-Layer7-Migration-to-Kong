@@ -10,13 +10,13 @@
 
 Enterprises running Broadcom Layer 7 (CA API Gateway) face a complex migration path to Kong. Policies are deeply nested XML with 100+ assertion types spanning authentication, traffic control, transformation, routing, and protocol bridging. Manual migration is slow, error-prone, and expensive.
 
-This framework automates 75-85% of that work by parsing Layer 7 exports, classifying every assertion by migration complexity, and generating production-ready Kong declarative YAML — with AI-assisted analysis for the hard cases.
+This framework automates 75-85% of that work by parsing Layer 7 exports, classifying every assertion by migration complexity, and generating production-ready Kong Gateway 3.14 declarative YAML — leveraging Enterprise plugins like `xml-threat-protection`, `kafka-upstream`, `opa`, and `exit-transformer` for broader coverage, with AI-assisted analysis for the hard cases.
 
 ## Key Results
 
 | Metric | Value |
 |--------|-------|
-| Assertion types recognized | **104** (19 auto-generate, 31 with review, 54 AI/manual) |
+| Assertion types recognized | **104** (19 auto-generate, 47 with review, 38 AI/manual) |
 | Assertion-specific extractors | **72** |
 | OTK bundle automation rate | **83%** (130 real OAuth/OIDC policies, 1596 assertions) |
 | Simple service automation | **100%** |
@@ -42,8 +42,8 @@ This framework automates 75-85% of that work by parsing Layer 7 exports, classif
               │          CLASSIFICATION              │
               │                                      │
               │  DIRECT (19)     → auto-generate     │
-              │  CONDITIONAL (31) → generate + review │
-              │  CUSTOM (54)     → AI analysis       │
+              │  CONDITIONAL (47) → generate + review │
+              │  CUSTOM (38)     → AI analysis       │
               └──────────┬───────────────┬───────────┘
                          │               │
               ┌──────────▼───┐   ┌───────▼──────────┐
@@ -71,7 +71,7 @@ This framework automates 75-85% of that work by parsing Layer 7 exports, classif
 Every Layer 7 assertion is classified into one of three tiers:
 
 - **DIRECT** — 1:1 Kong plugin mapping. Auto-generated with full confidence. Examples: `HttpBasic` → `basic-auth`, `RateLimit` → `rate-limiting`, `CorsAssertion` → `cors`.
-- **CONDITIONAL** — Known Kong plugin target, but configuration requires review. Examples: `DecodeJsonWebToken` → `jwt` (key config needed), `HttpRoutingAssertion` → upstream (TLS/timeout review).
+- **CONDITIONAL** — Known Kong plugin target, but configuration requires review. Includes Kong 3.14 Enterprise plugins: `DocumentStructureThreat` → `xml-threat-protection`, `KafkaRoutingAssertion` → `kafka-upstream`, `SiteMinderAuthenticate` → `openid-connect`, `SiteMinderAuthorize` → `opa`.
 - **CUSTOM** — No direct Kong equivalent. Analyzed by Claude AI or flagged for manual implementation. Examples: `JavaScript` (→ Lua conversion), `JmsRoutingAssertion` (→ architectural redesign), `WssSignature` (→ custom plugin).
 
 ## Quick Start
@@ -140,7 +140,7 @@ uv run migrate pattern list
 │   ├── cli.py                  # 7 CLI commands (analyze, generate, report, vaults, ...)
 │   ├── ingestion/              # XML/JSON parsing, 72 assertion extractors
 │   ├── analysis/               # Three-tier classification (104 assertion types)
-│   ├── generation/             # Kong YAML generator, 13 plugin generators, vault mapper
+│   ├── generation/             # Kong YAML generator, 23 plugin generators, vault mapper
 │   ├── ai/                     # Claude API integration, caching, pattern learning
 │   ├── patterns/               # Weighted similarity matcher + YAML pattern library
 │   ├── reporting/              # HTML report + Markdown talking points
@@ -150,7 +150,7 @@ uv run migrate pattern list
 │   └── patterns/               # Seed + AI-learned migration patterns
 ├── samples/                    # Test bundles (synthetic + real OTK policies)
 ├── tests/                      # 58 unit tests
-├── validation/                 # Docker-based Kong 3.9 validation environment
+├── validation/                 # Docker-based Kong 3.14 validation environment
 ├── config/                     # Settings + secrets (gitignored)
 └── doc/                        # Specification document
 ```
@@ -176,7 +176,7 @@ uv run migrate vaults bundle.json -b aws -o vault-output/
 
 ## Validation Environment
 
-Spin up a local Kong 3.9 instance to test generated configs:
+Spin up a local Kong 3.14 instance to test generated configs:
 
 ```bash
 bin/validation-up.sh                   # Start Kong + mock API
