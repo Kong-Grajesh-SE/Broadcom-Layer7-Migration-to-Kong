@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<l7:Item xmlns:l7="http://ns.l7tech.com/2010/04/gateway-management">
+    <l7:Name>Rate Limited Service Bundle</l7:Name>
+    <l7:Type>BUNDLE</l7:Type>
+    <l7:Resource>
+        <l7:Bundle>
+            <l7:References>
+                <l7:Item>
+                    <l7:Name>Product Catalog API</l7:Name>
+                    <l7:Id>b2c3d4e5f6a1</l7:Id>
+                    <l7:Type>SERVICE</l7:Type>
+                    <l7:Resource>
+                        <l7:Service id="b2c3d4e5f6a1">
+                            <l7:ServiceDetail folderId="/services/catalog">
+                                <l7:Name>Product Catalog API</l7:Name>
+                                <l7:ServiceMappings>
+                                    <l7:HttpMapping>
+                                        <l7:UrlPattern>/api/v2/products/*</l7:UrlPattern>
+                                    </l7:HttpMapping>
+                                </l7:ServiceMappings>
+                            </l7:ServiceDetail>
+                            <l7:Resources>
+                                <l7:ResourceSet>
+                                    <l7:Resource type="policy"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<wsp:Policy xmlns:L7p="http://www.layer7tech.com/ws/policy"
+            xmlns:wsp="http://schemas.xmlsoap.org/ws/2002/12/policy">
+    <wsp:All wsp:Usage="Required">
+        <!-- API Key authentication -->
+        <L7p:LookupApiKey>
+            <L7p:Location stringValue="HEADER"/>
+            <L7p:KeyName stringValue="X-API-Key"/>
+        </L7p:LookupApiKey>
+
+        <!-- IP whitelist -->
+        <L7p:RemoteIpRange>
+            <L7p:IpRange stringValue="10.0.0.0/8"/>
+            <L7p:AllowRange booleanValue="true"/>
+        </L7p:RemoteIpRange>
+
+        <!-- Throughput quota: 10000 per day -->
+        <L7p:ThroughputQuota>
+            <L7p:Quota intValue="10000"/>
+            <L7p:TimeUnit stringValue="PER_DAY"/>
+            <L7p:CounterName stringValue="product-api-daily"/>
+            <L7p:CounterStrategy stringValue="ALWAYS"/>
+        </L7p:ThroughputQuota>
+
+        <!-- Rate limit: 50 per second -->
+        <L7p:RateLimit>
+            <L7p:MaxRequestsPerSecond intValue="50"/>
+            <L7p:CounterName stringValue="product-api-rps"/>
+        </L7p:RateLimit>
+
+        <!-- Cache lookup -->
+        <L7p:CacheLookup>
+            <L7p:CacheId stringValue="product-cache"/>
+            <L7p:MaxEntryAgeMillis intValue="300000"/>
+            <L7p:MaxEntries intValue="5000"/>
+        </L7p:CacheLookup>
+
+        <!-- JWT validation -->
+        <L7p:DecodeJsonWebToken>
+            <L7p:SourceVariable stringValue="request.http.header.Authorization"/>
+            <L7p:TargetVariable stringValue="jwt.decoded"/>
+            <L7p:ValidateSignature booleanValue="true"/>
+        </L7p:DecodeJsonWebToken>
+
+        <!-- Route to catalog backend -->
+        <L7p:HttpRoutingAssertion>
+            <L7p:ProtectedServiceUrl stringValue="https://catalog-service.internal:8443/api/v2/products"/>
+            <L7p:ConnectionTimeout intValue="15000"/>
+            <L7p:Timeout intValue="30000"/>
+        </L7p:HttpRoutingAssertion>
+
+        <!-- Store response in cache -->
+        <L7p:CacheStorage>
+            <L7p:CacheId stringValue="product-cache"/>
+            <L7p:MaxEntrySizeBytes intValue="1048576"/>
+        </L7p:CacheStorage>
+    </wsp:All>
+</wsp:Policy>]]></l7:Resource>
+                                </l7:ResourceSet>
+                            </l7:Resources>
+                        </l7:Service>
+                    </l7:Resource>
+                </l7:Item>
+            </l7:References>
+            <l7:Mappings>
+                <l7:Mapping action="NewOrUpdate" srcId="b2c3d4e5f6a1" type="SERVICE"/>
+            </l7:Mappings>
+        </l7:Bundle>
+    </l7:Resource>
+</l7:Item>

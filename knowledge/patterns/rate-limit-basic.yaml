@@ -1,0 +1,23 @@
+pattern:
+  id: rate-limit-basic
+  name: "Basic Rate Limit"
+  description: "Simple per-second rate limiting with fixed threshold"
+  layer7:
+    assertion_type: RateLimit
+    config_keys:
+      - max_requests_per_second
+      - counter_name
+    keywords:
+      - ratelimit
+      - throttle
+      - requests per second
+  kong:
+    plugin: rate-limiting
+    config:
+      policy: local
+      fault_tolerant: true
+      hide_client_headers: false
+    requires_review: false
+  metadata:
+    contributor: seed
+    confidence: 0.95

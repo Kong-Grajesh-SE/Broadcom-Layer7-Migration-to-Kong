@@ -1,0 +1,11 @@
+[default]
+ai_model = "claude-sonnet-4-20250514"
+ai_max_tokens = 2000
+ai_max_resource_chars = 4000
+ai_rate_limit_delay_ms = 500
+ai_max_retries = 3
+ai_confidence_auto_threshold = 0.85
+ai_confidence_review_threshold = 0.60
+cache_dir = ".cache/ai"
+pattern_learning_threshold = 0.85
+output_format_version = "3.0"

@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+wheels/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# uv
+uv.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Secrets and credentials
+config/.secrets.toml
+.secrets.toml
+.env
+*.pem
+*.key
+
+# AI cache (regenerated on demand)
+.cache/
+
+# Test / coverage
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# Generated output (keep samples, ignore ad-hoc output)
+vault-output/
+*.generated.yaml
+
+# OS
+.DS_Store
+Thumbs.db

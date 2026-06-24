@@ -1,0 +1,27 @@
+pattern:
+  id: jwt-decode-validate
+  name: "JWT Decode and Validate"
+  description: "DecodeJsonWebToken assertion with signature validation"
+  layer7:
+    assertion_type: DecodeJsonWebToken
+    config_keys:
+      - source_variable
+      - target_variable
+      - validate_signature
+    keywords:
+      - jwt
+      - json web token
+      - decode
+      - validate
+  kong:
+    plugin: jwt
+    config:
+      key_claim_name: iss
+      claims_to_verify:
+        - exp
+      header_names:
+        - authorization
+    requires_review: true
+  metadata:
+    contributor: seed
+    confidence: 0.75

@@ -1,0 +1,26 @@
+pattern:
+  id: basic-auth-ldap
+  name: "HTTP Basic with LDAP Authentication"
+  description: "HttpBasic credential extraction followed by LDAP-backed Authentication assertion"
+  layer7:
+    assertion_type: Authentication
+    config_keys:
+      - identity_provider_oid
+    keywords:
+      - basic
+      - ldap
+      - authentication
+      - identity provider
+  kong:
+    plugin: ldap-auth
+    config:
+      ldap_host: REPLACE-WITH-LDAP-HOST
+      ldap_port: 389
+      base_dn: "dc=example,dc=com"
+      attribute: "uid"
+      hide_credentials: true
+      start_tls: false
+    requires_review: true
+  metadata:
+    contributor: seed
+    confidence: 0.70

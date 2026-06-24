@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  kong:
+    image: kong/kong-gateway:3.9
+    container_name: layer7-migration-kong
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /etc/kong/kong.yaml
+      KONG_PROXY_LISTEN: 0.0.0.0:8000
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+      KONG_LOG_LEVEL: info
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    volumes:
+      - ./kong.yaml:/etc/kong/kong.yaml:ro
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - migration-test
+
+  mock-api:
+    image: node:20-alpine
+    container_name: layer7-migration-mock
+    working_dir: /app
+    command: node server.js
+    volumes:
+      - ./mock-api:/app
+    ports:
+      - "8080:8080"
+    networks:
+      - migration-test
+
+networks:
+  migration-test:
+    driver: bridge

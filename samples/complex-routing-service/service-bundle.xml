@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<l7:Item xmlns:l7="http://ns.l7tech.com/2010/04/gateway-management">
+    <l7:Name>Complex Routing Service Bundle</l7:Name>
+    <l7:Type>BUNDLE</l7:Type>
+    <l7:Resource>
+        <l7:Bundle>
+            <l7:References>
+                <l7:Item>
+                    <l7:Name>Order Processing API</l7:Name>
+                    <l7:Id>c3d4e5f6a1b2</l7:Id>
+                    <l7:Type>SERVICE</l7:Type>
+                    <l7:Resource>
+                        <l7:Service id="c3d4e5f6a1b2">
+                            <l7:ServiceDetail folderId="/services/orders">
+                                <l7:Name>Order Processing API</l7:Name>
+                                <l7:ServiceMappings>
+                                    <l7:HttpMapping>
+                                        <l7:UrlPattern>/api/v1/orders/*</l7:UrlPattern>
+                                    </l7:HttpMapping>
+                                </l7:ServiceMappings>
+                            </l7:ServiceDetail>
+                            <l7:Resources>
+                                <l7:ResourceSet>
+                                    <l7:Resource type="policy"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<wsp:Policy xmlns:L7p="http://www.layer7tech.com/ws/policy"
+            xmlns:wsp="http://schemas.xmlsoap.org/ws/2002/12/policy">
+    <wsp:All wsp:Usage="Required">
+        <!-- TLS with client cert -->
+        <L7p:SslAssertion>
+            <L7p:RequireClientAuthentication booleanValue="true"/>
+            <L7p:TlsVersion stringValue="TLSv1.3"/>
+        </L7p:SslAssertion>
+
+        <!-- JWT authentication -->
+        <L7p:DecodeJsonWebToken>
+            <L7p:SourceVariable stringValue="request.http.header.Authorization"/>
+            <L7p:TargetVariable stringValue="jwt.claims"/>
+            <L7p:ValidateSignature booleanValue="true"/>
+        </L7p:DecodeJsonWebToken>
+
+        <!-- Set context variable -->
+        <L7p:SetVariable>
+            <L7p:VariableToSet stringValue="order.region"/>
+            <L7p:Expression stringValue="${jwt.claims.region}"/>
+            <L7p:DataType stringValue="string"/>
+        </L7p:SetVariable>
+
+        <!-- SQL injection protection -->
+        <L7p:SqlAttackProtection>
+            <L7p:IncludeUrl booleanValue="true"/>
+            <L7p:IncludeBody booleanValue="true"/>
+            <L7p:IncludeUrlQueryString booleanValue="true"/>
+        </L7p:SqlAttackProtection>
+
+        <!-- Code injection protection -->
+        <L7p:CodeInjectionProtection>
+            <L7p:IncludeUrlPath booleanValue="true"/>
+            <L7p:IncludeBody booleanValue="true"/>
+            <L7p:HtmlJavaScriptInjection booleanValue="true"/>
+            <L7p:ShellInjection booleanValue="true"/>
+        </L7p:CodeInjectionProtection>
+
+        <!-- Request size limit -->
+        <L7p:RequestSizeLimit>
+            <L7p:MaxSize intValue="5242880"/>
+        </L7p:RequestSizeLimit>
+
+        <!-- Conditional routing based on region -->
+        <L7p:ComparisonAssertion>
+            <L7p:Expression1 stringValue="${order.region}"/>
+            <L7p:Expression2 stringValue="eu"/>
+            <L7p:Operator stringValue="EQUALS"/>
+            <L7p:CaseSensitive booleanValue="false"/>
+        </L7p:ComparisonAssertion>
+
+        <!-- JavaScript transformation -->
+        <L7p:JavaScript>
+            <L7p:ScriptName stringValue="order-enrichment"/>
+            <L7p:Script stringValue="var order = JSON.parse(context.getVariable('request.http.body'));
+order.timestamp = new Date().toISOString();
+order.gateway_processed = true;
+order.correlation_id = context.getVariable('request.id');
+context.setVariable('request.http.body', JSON.stringify(order));"/>
+            <L7p:ExecutionTimeout intValue="5000"/>
+        </L7p:JavaScript>
+
+        <!-- JSON schema validation -->
+        <L7p:JsonSchemaAssertion>
+            <L7p:ResourceUrl stringValue="schemas/order-schema.json"/>
+            <L7p:Target stringValue="REQUEST"/>
+        </L7p:JsonSchemaAssertion>
+
+        <!-- Regex extraction -->
+        <L7p:Regex>
+            <L7p:Regex stringValue="order-(\d+)"/>
+            <L7p:AutoTarget booleanValue="true"/>
+            <L7p:CaptureVar stringValue="order.id"/>
+        </L7p:Regex>
+
+        <!-- ForEach loop for items -->
+        <L7p:ForEachLoop>
+            <L7p:LoopVariable stringValue="order.items"/>
+            <L7p:VariablePrefix stringValue="item"/>
+            <L7p:IterationLimit intValue="50"/>
+        </L7p:ForEachLoop>
+
+        <!-- Add tracking headers -->
+        <L7p:AddHeader>
+            <L7p:HeaderName stringValue="X-Correlation-Id"/>
+            <L7p:HeaderValue stringValue="${request.id}"/>
+            <L7p:Target stringValue="request"/>
+        </L7p:AddHeader>
+
+        <L7p:AddHeader>
+            <L7p:HeaderName stringValue="X-Gateway-Region"/>
+            <L7p:HeaderValue stringValue="${order.region}"/>
+            <L7p:Target stringValue="request"/>
+        </L7p:AddHeader>
+
+        <!-- Route to orders backend -->
+        <L7p:HttpRoutingAssertion>
+            <L7p:ProtectedServiceUrl stringValue="https://orders-service.internal:8443/api/v1/orders"/>
+            <L7p:TlsVersion stringValue="TLSv1.3"/>
+            <L7p:ConnectionTimeout intValue="10000"/>
+            <L7p:Timeout intValue="45000"/>
+            <L7p:FollowRedirects booleanValue="false"/>
+        </L7p:HttpRoutingAssertion>
+
+        <!-- Audit -->
+        <L7p:AuditDetailAssertion>
+            <L7p:Detail stringValue="Order API: ${request.http.method} ${request.http.uri} - region=${order.region}"/>
+            <L7p:Level stringValue="INFO"/>
+        </L7p:AuditDetailAssertion>
+
+        <!-- Custom error response for failures -->
+        <L7p:CustomizeErrorResponse>
+            <L7p:Content stringValue='{"error": "Order processing failed", "correlation_id": "${request.id}"}'/>
+            <L7p:ContentType stringValue="application/json"/>
+            <L7p:HttpStatus intValue="500"/>
+        </L7p:CustomizeErrorResponse>
+    </wsp:All>
+</wsp:Policy>]]></l7:Resource>
+                                </l7:ResourceSet>
+                            </l7:Resources>
+                        </l7:Service>
+                    </l7:Resource>
+                </l7:Item>
+            </l7:References>
+            <l7:Mappings>
+                <l7:Mapping action="NewOrUpdate" srcId="c3d4e5f6a1b2" type="SERVICE"/>
+            </l7:Mappings>
+        </l7:Bundle>
+    </l7:Resource>
+</l7:Item>

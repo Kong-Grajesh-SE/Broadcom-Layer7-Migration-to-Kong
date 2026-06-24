@@ -1,0 +1,19 @@
+_format_version: '3.0'
+
+services:
+  - name: mock-backend
+    url: http://mock-api:8080
+    connect_timeout: 30000
+    read_timeout: 60000
+    tags:
+      - validation
+    routes:
+      - name: mock-route
+        paths:
+          - /api
+        strip_path: true
+        protocols:
+          - http
+          - https
+        tags:
+          - validation

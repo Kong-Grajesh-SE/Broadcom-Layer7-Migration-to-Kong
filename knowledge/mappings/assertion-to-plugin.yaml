@@ -1,0 +1,185 @@
+# Layer 7 Assertion → Kong Plugin Mapping Reference
+# This file extends the built-in mappings in analysis/classifier.py
+# Add custom mappings here to override or supplement defaults.
+
+version: "1.0"
+
+mappings:
+  # ============================================================
+  # DIRECT MAPPINGS (auto-generate, no review needed)
+  # ============================================================
+
+  - assertion_type: HttpBasic
+    kong_plugin: basic-auth
+    complexity: direct
+    notes: "Credential extraction - IdP mapped separately via Authentication assertion"
+
+  - assertion_type: LookupApiKey
+    kong_plugin: key-auth
+    complexity: direct
+    notes: "API Portal key lookup maps to Kong key-auth"
+
+  - assertion_type: CorsAssertion
+    kong_plugin: cors
+    complexity: direct
+    notes: "Direct mapping - origins, methods, headers config transfers cleanly"
+
+  - assertion_type: RateLimit
+    kong_plugin: rate-limiting
+    complexity: direct
+    notes: "Per-second rate, maps to Kong rate-limiting local policy"
+
+  - assertion_type: DistributedRateLimit
+    kong_plugin: rate-limiting-advanced
+    complexity: direct
+    notes: "Cluster-wide rate limit - needs Kong EE rate-limiting-advanced"
+
+  - assertion_type: RequestSizeLimit
+    kong_plugin: request-size-limiting
+    complexity: direct
+    notes: "Max payload size - convert bytes to megabytes for Kong"
+
+  - assertion_type: RemoteIpRange
+    kong_plugin: ip-restriction
+    complexity: direct
+    notes: "IP allow/deny list - check allow vs deny semantics"
+
+  - assertion_type: HardcodedResponse
+    kong_plugin: request-termination
+    complexity: direct
+    notes: "Static response - maps to request-termination body/status"
+
+  - assertion_type: AuditDetailAssertion
+    kong_plugin: http-log
+    complexity: direct
+    notes: "Audit logging - needs log endpoint configuration"
+
+  - assertion_type: AddHeader
+    kong_plugin: request-transformer
+    complexity: direct
+    notes: "Header add/replace - check target (request vs response)"
+
+  - assertion_type: RemoveHeader
+    kong_plugin: request-transformer
+    complexity: direct
+    notes: "Header removal - check target (request vs response)"
+
+  # ============================================================
+  # CONDITIONAL MAPPINGS (known plugin, needs config review)
+  # ============================================================
+
+  - assertion_type: Authentication
+    kong_plugin: basic-auth
+    complexity: conditional
+    review_flag: idp_config_required
+    notes: "Identity provider type determines exact Kong auth plugin"
+
+  - assertion_type: SslAssertion
+    kong_plugin: mtls-auth
+    complexity: conditional
+    review_flag: security_review
+    notes: "If client cert required → mtls-auth, otherwise route TLS config"
+
+  - assertion_type: RequireSaml
+    kong_plugin: openid-connect
+    complexity: conditional
+    review_flag: idp_config_required
+    notes: "SAML → OIDC migration required. Map IdP metadata to OIDC discovery."
+
+  - assertion_type: DecodeJsonWebToken
+    kong_plugin: jwt
+    complexity: conditional
+    review_flag: key_config_required
+    notes: "JWT validation - map algorithm, key source, claims"
+
+  - assertion_type: EncodeJsonWebToken
+    kong_plugin: jwt-signer
+    complexity: conditional
+    review_flag: key_config_required
+    notes: "JWT signing - map algorithm, key reference, payload"
+
+  - assertion_type: ThroughputQuota
+    kong_plugin: rate-limiting-advanced
+    complexity: conditional
+    review_flag: transform_review
+    notes: "Quota windows and counter strategy need careful mapping"
+
+  - assertion_type: CacheLookup
+    kong_plugin: proxy-cache
+    complexity: conditional
+    review_flag: cache_strategy
+    notes: "Cache TTL, scope, and invalidation strategy need review"
+
+  - assertion_type: HttpRoutingAssertion
+    kong_plugin: _upstream
+    complexity: conditional
+    review_flag: routing_decision
+    notes: "Backend routing - maps to Kong service/upstream config"
+
+  - assertion_type: JsonSchemaAssertion
+    kong_plugin: request-validator
+    complexity: conditional
+    review_flag: transform_review
+    notes: "JSON schema validation - schema content must be migrated"
+
+  - assertion_type: AwsLambda
+    kong_plugin: aws-lambda
+    complexity: conditional
+    review_flag: routing_decision
+    notes: "AWS Lambda invocation - map function name, region, IAM"
+
+  # ============================================================
+  # CUSTOM MAPPINGS (requires AI analysis or manual work)
+  # ============================================================
+
+  - assertion_type: JavaScript
+    kong_plugin: pre-function
+    complexity: custom
+    review_flag: lua_migration_required
+    notes: "JavaScript → Lua conversion needed"
+
+  - assertion_type: XslTransformation
+    kong_plugin: pre-function
+    complexity: custom
+    review_flag: custom_plugin_required
+    notes: "XSL transforms have no Kong equivalent - custom Lua or plugin"
+
+  - assertion_type: JdbcQuery
+    kong_plugin: null
+    complexity: custom
+    review_flag: custom_plugin_required
+    notes: "Database queries in gateway should move to backend services"
+
+  - assertion_type: CustomAssertion
+    kong_plugin: null
+    complexity: custom
+    review_flag: custom_plugin_required
+    notes: "Custom Java assertion - requires complete reimplementation"
+
+  - assertion_type: SiteMinderAuthenticate
+    kong_plugin: null
+    complexity: custom
+    review_flag: idp_config_required
+    notes: "CA SSO has no direct Kong equivalent - requires OIDC migration strategy"
+
+  # ============================================================
+  # PROTOCOL ROUTING (architectural redesign needed)
+  # ============================================================
+
+  - assertion_type: JmsRoutingAssertion
+    kong_plugin: null
+    complexity: custom
+    review_flag: protocol_unsupported
+    notes: "JMS routing - consider sidecar or event-driven architecture"
+
+  - assertion_type: MqNativeRoutingAssertion
+    kong_plugin: null
+    complexity: custom
+    review_flag: protocol_unsupported
+    notes: "MQ Native - consider sidecar or message bridge pattern"
+
+  - assertion_type: KafkaRoutingAssertion
+    kong_plugin: null
+    complexity: custom
+    review_flag: protocol_unsupported
+    notes: "Kafka routing - consider Kong's event gateway or sidecar"
