@@ -218,6 +218,149 @@ bin/validation-reload.sh kong.yaml     # Load generated config
 bin/validation-down.sh                 # Tear down
 ```
 
+## Deploy to Kong Konnect
+
+Push generated configurations directly to a Kong Konnect control plane using `deck`.
+
+### Prerequisites
+
+1. **Kong Konnect account** — [cloud.konghq.com](https://cloud.konghq.com)
+2. **Control Plane** — create one in Konnect under **Gateway Manager → New Control Plane**
+   - Note the **control plane name** (e.g., `layer7-migration`)
+   - Konnect auto-provisions a control plane ID — you can use either name or ID with deck
+3. **Personal Access Token** — generate under **Organization → Access Tokens**
+4. **deck CLI** — Kong's declarative config tool
+
+```bash
+# Install deck
+brew install kong/deck/deck
+
+# Set Konnect credentials
+export KONNECT_TOKEN="kpat_your_personal_access_token"
+export KONNECT_CP="layer7-migration"   # your control plane name
+```
+
+### End-to-End Working Scenario
+
+**Scenario:** Migrate a Layer 7 service with basic auth + rate limiting + CORS to a live Konnect control plane.
+
+```bash
+# 1. Analyze the Layer 7 bundle
+uv run migrate analyze samples/simple-auth-service/service-bundle.xml
+
+#  Output:
+#    Services:     1
+#    Assertions:   9
+#    DIRECT:       7 (78%)  ← auto-generated
+#    CONDITIONAL:  2 (22%)  ← generated with review flags
+#    CUSTOM:       0 (0%)
+
+# 2. Generate Kong declarative YAML
+uv run migrate generate samples/simple-auth-service/service-bundle.xml -o kong.yaml
+
+# 3. Validate against Konnect schema
+deck file validate kong.yaml
+
+# 4. Preview what will be created (dry run)
+deck gateway diff kong.yaml \
+  --konnect-token "$KONNECT_TOKEN" \
+  --konnect-control-plane-name "$KONNECT_CP"
+
+# 5. Deploy to Konnect
+deck gateway sync kong.yaml \
+  --konnect-token "$KONNECT_TOKEN" \
+  --konnect-control-plane-name "$KONNECT_CP"
+
+#  Output:
+#    creating service SimpleAuthService
+#    creating route simple-auth-route
+#    creating plugin basic-auth (service: SimpleAuthService)
+#    creating plugin rate-limiting (service: SimpleAuthService)
+#    creating plugin cors (service: SimpleAuthService)
+#    creating plugin ip-restriction (service: SimpleAuthService)
+#    creating plugin request-size-limiting (service: SimpleAuthService)
+#    Summary:
+#      Created: 1 services, 1 routes, 5 plugins
+#      Updated: 0
+#      Deleted: 0
+```
+
+### What You See in Konnect
+
+After sync, the migrated service appears in Konnect Gateway Manager with full plugin configuration:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Kong Konnect > Gateway Manager > layer7-migration          │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Services (1)                                               │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │ SimpleAuthService                                      │ │
+│  │ https://backend-api.example.com:443                    │ │
+│  │                                                        │ │
+│  │ Route: /api/v1/simple-auth                             │ │
+│  │                                                        │ │
+│  │ Plugins:                                               │ │
+│  │   ✓ basic-auth            Credential extraction        │ │
+│  │   ✓ rate-limiting         100 req/sec                  │ │
+│  │   ✓ cors                  Origins: *.example.com       │ │
+│  │   ✓ ip-restriction        Allow: 10.0.0.0/8            │ │
+│  │   ✓ request-size-limiting Max: 10 MB                   │ │
+│  └────────────────────────────────────────────────────────┘ │
+│                                                             │
+│  Tags: layer7-migrated, source:restman                      │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Vault Secrets in Konnect
+
+For services that reference secrets (cluster properties, stored passwords, certificates), deploy vault configuration first:
+
+```bash
+# Generate vault mappings
+uv run migrate vaults bundle.json -b env -o vault-output/
+
+# Deploy vault config to Konnect
+deck gateway sync vault-output/kong-vaults.yaml \
+  --konnect-token "$KONNECT_TOKEN" \
+  --konnect-control-plane-name "$KONNECT_CP"
+
+# Set environment variables on the data plane nodes
+# (use vault-output/vault.env.template as reference)
+
+# Then deploy the service config — vault references resolve at runtime
+deck gateway sync kong.yaml \
+  --konnect-token "$KONNECT_TOKEN" \
+  --konnect-control-plane-name "$KONNECT_CP"
+```
+
+### Batch Migration to Konnect
+
+For multi-service migrations, generate and deploy iteratively:
+
+```bash
+# Generate configs for each bundle
+for bundle in customer-exports/*.xml; do
+  name=$(basename "$bundle" .xml)
+  uv run migrate generate "$bundle" -o "output/${name}.yaml"
+done
+
+# Merge into a single config
+deck file merge output/*.yaml -o combined-kong.yaml
+
+# Preview all changes
+deck gateway diff combined-kong.yaml \
+  --konnect-token "$KONNECT_TOKEN" \
+  --konnect-control-plane-name "$KONNECT_CP"
+
+# Deploy all at once
+deck gateway sync combined-kong.yaml \
+  --konnect-token "$KONNECT_TOKEN" \
+  --konnect-control-plane-name "$KONNECT_CP"
+```
+
 ## Testing
 
 ```bash
